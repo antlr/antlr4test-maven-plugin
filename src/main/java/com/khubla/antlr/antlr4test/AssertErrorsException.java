@@ -1,4 +1,4 @@
-package org.antlr.mojo.antlr4test;
+package com.khubla.antlr.antlr4test;
 
 public class AssertErrorsException extends Exception {
 

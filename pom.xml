@@ -1,12 +1,26 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.antlr</groupId>
+	<groupId>com.khubla.antlr</groupId>
 	<artifactId>antlr4test-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
 	<version>1.4-SNAPSHOT</version>
 	<name>khubla.com Antlr4 test mojo</name>
+	<url>https://github.com/teverett/antlr4test-maven-plugin</url>
+	<licenses>
+		<license>
+			<name>BSD 3-Clause License</name>
+			<url>https://opensource.org/licenses/BSD-3-Clause</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/teverett/antlr4test-maven-plugin.git</url>
+	</scm>
+	<organization>
+		<name>khubla.com</name>
+		<url>http://www.khubla.com</url>
+	</organization>
 	<properties>
 		<maven.version>3.3.9</maven.version>
 		<antlr.version>4.5.3</antlr.version>
@@ -104,18 +118,14 @@
 				<artifactId>antlr4-maven-plugin</artifactId>
 				<version>${antlr.version}</version>
 				<configuration>
-					<!-- directory generated-test-sources not possible with GrammarTestMojo using ClassLoader focused on /target/classes
-					<outputDirectory>${project.build.directory}/generated-test-sources/antlr4</outputDirectory>
-					-->
+					<!-- directory generated-test-sources not possible with GrammarTestMojo using ClassLoader focused on /target/classes <outputDirectory>${project.build.directory}/generated-test-sources/antlr4</outputDirectory> -->
 					<sourceDirectory>src/test/resources/</sourceDirectory>
 					<grammars>tnt.g4</grammars>
 				</configuration>
 				<executions>
 					<execution>
 						<id>antlr4-test-resources</id>
-						<!-- phase generate-test-sources not possible with GrammarTestMojo using ClassLoader focused on /target/classes
-						<phase>generate-test-sources</phase>
-						-->
+						<!-- phase generate-test-sources not possible with GrammarTestMojo using ClassLoader focused on /target/classes <phase>generate-test-sources</phase> -->
 						<goals>
 							<goal>antlr4</goal>
 						</goals>

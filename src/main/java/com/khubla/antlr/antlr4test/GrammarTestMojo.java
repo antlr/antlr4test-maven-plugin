@@ -25,7 +25,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.antlr.mojo.antlr4test;
+package com.khubla.antlr.antlr4test;
 
 import java.io.File;
 import java.lang.reflect.Constructor;

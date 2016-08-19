@@ -25,13 +25,14 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package test.org.antlr.mojo.antlr4test;
+package test.com.khubla.antlr.antlr4test;
 
 import java.io.File;
 import java.net.URL;
 
-import org.antlr.mojo.antlr4test.GrammarTestMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+
+import com.khubla.antlr.antlr4test.GrammarTestMojo;
 
 /**
  * @author Tom Everett

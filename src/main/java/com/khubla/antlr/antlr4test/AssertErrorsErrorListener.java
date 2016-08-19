@@ -1,4 +1,4 @@
-package org.antlr.mojo.antlr4test;
+package com.khubla.antlr.antlr4test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
