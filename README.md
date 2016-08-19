@@ -1,7 +1,7 @@
-grammartestmojo
+antlr4test-maven-plugin
 ===============
 
-Maven Mojo for testing Antlr Grammars
+Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
 
 Example usage
 ---------
