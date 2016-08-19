@@ -18,3 +18,8 @@ Example usage
   </configuration>
 </plugin>
 ```
+
+Travis Status
+---------
+
+<a href="https://travis-ci.org/teverett/antlr4test-maven-plugin"><img src="https://api.travis-ci.org/teverett/antlr4test-maven-plugin.png"></a>
