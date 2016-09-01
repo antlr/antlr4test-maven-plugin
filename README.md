@@ -3,6 +3,16 @@ antlr4test-maven-plugin
 
 Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
 
+Maven Coordinates
+-------------
+
+```
+<groupId>com.khubla.antlr</groupId>
+<artifactId>antlr4test-maven-plugin</artifactId>
+<version>1.4-SNAPSHOT</version>
+<packaging>jar</packaging>
+```
+
 Example usage
 ---------
 
