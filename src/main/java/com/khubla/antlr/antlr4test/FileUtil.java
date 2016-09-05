@@ -77,7 +77,7 @@ public class FileUtil {
    }
 
    public static List<String> getNonEmptyLines(File file) throws IOException {
-      List<String> nonEmptyLines = new ArrayList<String>();
+      final List<String> nonEmptyLines = new ArrayList<String>();
       BufferedReader br = null;
       try {
          br = new BufferedReader(new FileReader(file));

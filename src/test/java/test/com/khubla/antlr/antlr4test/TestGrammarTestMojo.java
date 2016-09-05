@@ -34,6 +34,8 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import com.khubla.antlr.antlr4test.GrammarTestMojo;
 
+import junit.framework.Assert;
+
 /**
  * @author Tom Everett
  */
@@ -41,11 +43,19 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
    /**
     * file
     */
-   private static final String POMFILE = "src/test/resources/GrammarTestMojo-pom.xml";
+   private static final String GENERIC_POMFILE = "src/test/resources/generic-pom.xml";
+   private static final String CASEINSENSITIVE_POMFILE = "src/test/resources/caseinsensitive-pom.xml";
    /**
     * goal
     */
-   private static final String GOAL = "test";
+   private static final String TEST_GOAL = "test";
+
+   protected String getAbsolutePath(String relativePath) {
+      final ClassLoader classLoader = getClass().getClassLoader();
+      final URL resource = classLoader.getResource(".");
+      final File file = new File(resource.getFile(), relativePath);
+      return file.getAbsolutePath();
+   }
 
    @Override
    protected void setUp() throws Exception {
@@ -60,37 +70,72 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
    }
 
    /**
-    * Basic test of execution
+    * Basic test of case insensitive execution
     */
-   public void testExecution() throws Exception {
-         final File pom = getTestFile(POMFILE);
+   public void testCaseInsensitiveExecution() throws Exception {
+      try {
+         /*
+          * pom
+          */
+         System.out.println("Testing '" + CASEINSENSITIVE_POMFILE + "'");
+         final File pom = getTestFile(CASEINSENSITIVE_POMFILE);
          assertNotNull(pom);
          assertTrue(pom.exists());
-         final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(GOAL, pom);
+         /*
+          * test
+          */
+         final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
          assertNotNull(grammarTestMojo);
          grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
          grammarTestMojo.execute();
+      } catch (final Exception e) {
+         e.printStackTrace();
+         Assert.fail();
+      }
+   }
+
+   /**
+    * Basic test of execution
+    */
+   public void testGenericExecution() throws Exception {
+      try {
+         /*
+          * pom
+          */
+         System.out.println("Testing '" + GENERIC_POMFILE + "'");
+         final File pom = getTestFile(GENERIC_POMFILE);
+         assertNotNull(pom);
+         assertTrue(pom.exists());
+         /*
+          * test
+          */
+         final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
+         assertNotNull(grammarTestMojo);
+         grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+         grammarTestMojo.execute();
+      } catch (final Exception e) {
+         e.printStackTrace();
+         Assert.fail();
+      }
    }
 
    /**
     * Basic test of instantiation
     */
    public void testInstatiation() throws Exception {
-         final File pom = getTestFile(POMFILE);
+      try {
+         final File pom = getTestFile(GENERIC_POMFILE);
          assertNotNull(pom);
          assertTrue(pom.exists());
-         final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(GOAL, pom);
+         final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
          assertNotNull(grammarTestMojo);
          assertTrue(grammarTestMojo.isVerbose() == true);
-         assertTrue(grammarTestMojo.getExampleFiles().compareTo("src/test/resources/examples/") == 0);
+         assertTrue(grammarTestMojo.getExampleFiles().compareTo("src/test/resources/examples") == 0);
          assertTrue(grammarTestMojo.getEntryPoint().compareTo("equation") == 0);
+         assertTrue(grammarTestMojo.getTestFileExtension().compareTo(".txt") == 0);
+      } catch (final Exception e) {
+         e.printStackTrace();
+         Assert.fail();
+      }
    }
-
-   protected String getAbsolutePath(String relativePath) {
-      final ClassLoader classLoader = getClass().getClassLoader();
-      final URL resource = classLoader.getResource(".");
-      final File file = new File(resource.getFile(), relativePath);
-      return file.getAbsolutePath();
-   }
-
 }

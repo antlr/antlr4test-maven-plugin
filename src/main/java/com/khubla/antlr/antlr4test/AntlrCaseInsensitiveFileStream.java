@@ -23,13 +23,13 @@ public class AntlrCaseInsensitiveFileStream extends ANTLRFileStream {
       }
       if (i < 0) {
          i++; // e.g., translate LA(-1) to use offset i=0; then data[p+0-1]
-         if ((p + i - 1) < 0) {
+         if (((p + i) - 1) < 0) {
             return IntStream.EOF; // invalid; no char before first char
          }
       }
-      if ((p + i - 1) >= n) {
+      if (((p + i) - 1) >= n) {
          return IntStream.EOF;
       }
-      return lookaheadData[p + i - 1];
+      return lookaheadData[(p + i) - 1];
    }
 }

@@ -21,20 +21,14 @@ public class AssertErrorsErrorListener extends BaseErrorListener {
    protected static final String LITERAL_BACKSLASH_N = "\\\\n";
    protected List<String> errorMessages = new ArrayList<String>();
 
-   @Override
-   public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-      final String errorMessage = String.format("line %d:%d %s", line, charPositionInLine, msg);
-      errorMessages.add(errorMessage);
-   }
-
    public void assertErrors(File errorMessagesFile) throws AssertErrorsException {
       if (!errorMessages.isEmpty()) {
          List<String> expectedErrorMessages = null;
          try {
             expectedErrorMessages = FileUtil.getNonEmptyLines(errorMessagesFile);
-         } catch (FileNotFoundException ex) {
+         } catch (final FileNotFoundException ex) {
             throw new AssertErrorsException(String.format("found %d errors, but missing file %s", errorMessages.size(), errorMessagesFile.getName()), ex);
-         } catch (IOException ex) {
+         } catch (final IOException ex) {
             throw new AssertErrorsException(String.format("found %d errors, unable to read file %s", errorMessages.size(), errorMessagesFile.getName()), ex);
          }
          expectedErrorMessages = replacePlaceholders(expectedErrorMessages);
@@ -58,8 +52,8 @@ public class AssertErrorsErrorListener extends BaseErrorListener {
    }
 
    protected List<String> replacePlaceholders(List<String> stringList) {
-      List<String> replacedStringList = new ArrayList<String>();
-      for (String vString : stringList) {
+      final List<String> replacedStringList = new ArrayList<String>();
+      for (final String vString : stringList) {
          replacedStringList.add(replacePlaceholders(vString));
       }
       return replacedStringList;
@@ -74,5 +68,11 @@ public class AssertErrorsErrorListener extends BaseErrorListener {
          result = result.replaceAll(LITERAL_BACKSLASH_N_PLACEHOLDER, LITERAL_BACKSLASH_N);
       }
       return result;
+   }
+
+   @Override
+   public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+      final String errorMessage = String.format("line %d:%d %s", line, charPositionInLine, msg);
+      errorMessages.add(errorMessage);
    }
 }

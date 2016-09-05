@@ -73,7 +73,7 @@ public class GrammarTestMojo extends AbstractMojo {
     * grammar Name
     */
    @Parameter
-   private final boolean caseInsensitive = false;
+   private boolean caseInsensitive = false;
    /**
     * entry point method on the parser
     */
@@ -105,6 +105,10 @@ public class GrammarTestMojo extends AbstractMojo {
    @Parameter
    private String packageName;
    /**
+    * testFileExtension
+    */
+   private String testFileExtension = null;
+   /**
     * basedir dir
     */
    @Parameter(defaultValue = "${basedir}")
@@ -125,6 +129,12 @@ public class GrammarTestMojo extends AbstractMojo {
          if (verbose) {
             System.out.println("baseDir: " + baseDir);
             System.out.println("exampleFiles: " + exampleFiles);
+            if (false == baseDir.exists()) {
+               throw new MojoExecutionException("baseDir '" + baseDir.getAbsolutePath() + "' does not exist");
+            }
+            if (false == getExampleFilesDir().exists()) {
+               throw new MojoExecutionException("exampleFiles directory'" + exampleFiles + "' does not exist");
+            }
          }
          /*
           * test grammars
@@ -159,12 +169,24 @@ public class GrammarTestMojo extends AbstractMojo {
       return exampleFiles;
    }
 
+   private File getExampleFilesDir() {
+      return new File(baseDir + "/" + exampleFiles);
+   }
+
    public String getGrammarName() {
       return grammarName;
    }
 
    public String getPackageName() {
       return packageName;
+   }
+
+   public String getTestFileExtension() {
+      return testFileExtension;
+   }
+
+   public boolean isCaseInsensitive() {
+      return caseInsensitive;
    }
 
    public boolean isEnabled() {
@@ -181,6 +203,10 @@ public class GrammarTestMojo extends AbstractMojo {
 
    public void setBaseDir(File baseDir) {
       this.baseDir = baseDir;
+   }
+
+   public void setCaseInsensitive(boolean caseInsensitive) {
+      this.caseInsensitive = caseInsensitive;
    }
 
    public void setEnabled(boolean enabled) {
@@ -205,6 +231,10 @@ public class GrammarTestMojo extends AbstractMojo {
 
    public void setShowTree(boolean showTree) {
       this.showTree = showTree;
+   }
+
+   public void setTestFileExtension(String testFileExtension) {
+      this.testFileExtension = testFileExtension;
    }
 
    public void setVerbose(boolean verbose) {
@@ -244,7 +274,7 @@ public class GrammarTestMojo extends AbstractMojo {
       final Constructor<?> parserConstructor = parserClass.getConstructor(TokenStream.class);
       System.out.println("Parsing :" + grammarFile.getAbsolutePath());
       ANTLRFileStream antlrFileStream;
-      if (caseInsensitive) {
+      if (true == caseInsensitive) {
          antlrFileStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath());
       } else {
          antlrFileStream = new ANTLRFileStream(grammarFile.getAbsolutePath());
@@ -277,7 +307,7 @@ public class GrammarTestMojo extends AbstractMojo {
       /*
        * check syntax
        */
-      File treeFile = new File(grammarFile.getAbsolutePath() + TREE_SUFFIX);
+      final File treeFile = new File(grammarFile.getAbsolutePath() + TREE_SUFFIX);
       if (treeFile.exists()) {
          final String lispTree = Trees.toStringTree(parserRuleContext, parser);
          if (null != lispTree) {
@@ -304,14 +334,19 @@ public class GrammarTestMojo extends AbstractMojo {
       /*
        * iterate examples
        */
-      final List<File> exampleFiles = FileUtil.getAllFiles(baseDir + "/" + this.exampleFiles);
+      final List<File> exampleFiles = FileUtil.getAllFiles(getExampleFilesDir().getAbsolutePath());
       if (null != exampleFiles) {
          for (final File file : exampleFiles) {
             /*
              * test grammar
              */
             if ((!file.getName().endsWith(ERRORS_SUFFIX)) && (!file.getName().endsWith(TREE_SUFFIX))) {
-               testGrammar(file);
+               /*
+                * file extension
+                */
+               if ((testFileExtension == null) || ((testFileExtension != null) && (file.getName().endsWith(testFileExtension)))) {
+                  testGrammar(file);
+               }
             }
             /*
              * gc
