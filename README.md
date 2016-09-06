@@ -23,14 +23,17 @@ Example usage
 
 ```xml
 <plugin>
-  <groupId>com.khubla.antlr</groupId>
-  <artifactId>grammartest-maven-plugin</artifactId>
-  <configuration>
-    <verbose>true</verbose>
-    <entryPoint>equation</entryPoint>
-    <exampleFiles>src/test/resources/examples/</exampleFiles>
-    <grammarFiles>src/test/resources/grammars/</grammarFiles>
-  </configuration>
+	<groupId>org.antlr</groupId>
+	<artifactId>antlr4test-maven-plugin</artifactId>
+	<configuration>
+		<verbose>true</verbose>
+		<showTree>true</showTree>
+		<entryPoint>equation</entryPoint>
+		<grammarName>tnt</grammarName>
+		<packageName></packageName>
+		<testFileExtension>.txt</testFileExtension>
+		<exampleFiles>src/test/resources/examples</exampleFiles>
+	</configuration>
 </plugin>
 ```
 
