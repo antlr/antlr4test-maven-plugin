@@ -41,54 +41,72 @@ Parameters
 
 Required name of the grammar.  This should match the name of the grammar defined in the grammar ".g4" file.
 
-```<grammarName>PHP</grammarName>```
+```
+<grammarName>PHP</grammarName>
+```
 
 ###caseInsensitive
 
 An optional boolean parameter used to enable a caseInsensitive lexer for case-insensitive languages such as PHP
 
-```<caseInsensitive>true</caseInsensitive>```
+```
+<caseInsensitive>true</caseInsensitive>
+```
 
 ###entryPoint
 
 Required name of the grammar rule to use as the test entry point
 
-```<entryPoint>htmlDocument</entryPoint>```
+```
+<entryPoint>htmlDocument</entryPoint>
+```
 
 ###enabled
 
 Optional boolean enable-disable flag
 
-```<enabled>true<\enabled>```
+```
+<enabled>true<\enabled>
+```
 
 ###verbose
 
 Optionally produce verbose output
 
-```<verbose>true</verbose>```
+```
+<verbose>true</verbose>
+```
 
 ###showTree
 
 Optionally show the LISP grammar tree
 
-```<showTree>false</showTree>```
+```
+<showTree>false</showTree>
+```
 
 ###exampleFiles
 
 Required relative path to the example files
 
-```<exampleFiles>src/test/resources/examples/</exampleFiles>```
+```
+<exampleFiles>src/test/resources/examples/</exampleFiles>
+```
 
 ###packageName
 
 Optional package name to find the Lexer and Parser classes in
 
-```<packageName></packageName>```
+```
+<packageName></packageName>
+```
 
 ###testFileExtension 
 
 Optional file extension of test files
 
-```<testFileExtension>.php</testFileExtension>```
+```
+<testFileExtension>.php</testFileExtension>
+```
 
 
