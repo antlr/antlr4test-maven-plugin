@@ -31,7 +31,7 @@
 	</organization>
 	<properties>
 		<maven.version>3.3.9</maven.version>
-		<antlr.version>4.5.3</antlr.version>
+		<antlr.version>4.6</antlr.version>
 	</properties>
 	<dependencies>
 		<dependency>
