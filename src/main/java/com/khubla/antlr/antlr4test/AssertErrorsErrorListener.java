@@ -21,11 +21,11 @@ public class AssertErrorsErrorListener extends BaseErrorListener {
    protected static final String LITERAL_BACKSLASH_N = "\\\\n";
    protected List<String> errorMessages = new ArrayList<String>();
 
-   public void assertErrors(File errorMessagesFile) throws AssertErrorsException {
+   public void assertErrors(File errorMessagesFile, String encoding) throws AssertErrorsException {
       if (!errorMessages.isEmpty()) {
          List<String> expectedErrorMessages = null;
          try {
-            expectedErrorMessages = FileUtil.getNonEmptyLines(errorMessagesFile);
+            expectedErrorMessages = FileUtil.getNonEmptyLines(errorMessagesFile, encoding);
          } catch (final FileNotFoundException ex) {
             throw new AssertErrorsException(String.format("found %d errors, but missing file %s", errorMessages.size(), errorMessagesFile.getName()), ex);
          } catch (final IOException ex) {

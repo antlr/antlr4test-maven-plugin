@@ -8,8 +8,8 @@ import org.antlr.v4.runtime.IntStream;
 public class AntlrCaseInsensitiveFileStream extends ANTLRFileStream {
    protected char[] lookaheadData;
 
-   public AntlrCaseInsensitiveFileStream(String fileName) throws IOException {
-      super(fileName);
+   public AntlrCaseInsensitiveFileStream(String fileName, String encoding) throws IOException {
+      super(fileName, encoding);
       lookaheadData = new char[data.length];
       for (int i = 0; i < data.length; i++) {
          lookaheadData[i] = Character.toLowerCase(data[i]);
