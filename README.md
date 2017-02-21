@@ -112,4 +112,10 @@ Optional file extension of test files
 <testFileExtension>.php</testFileExtension>
 ```
 
+###fileEncoding
 
+Optional file encoding. The default value if UTF-8.
+
+```
+<fileEncoding>Shift_JIS</fileEncoding>
+```
