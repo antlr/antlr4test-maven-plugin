@@ -87,6 +87,7 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
          final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
          assertNotNull(grammarTestMojo);
          grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+         grammarTestMojo.setFileEncoding("UTF-8");
          grammarTestMojo.execute();
       } catch (final Exception e) {
          e.printStackTrace();
@@ -112,6 +113,7 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
          final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
          assertNotNull(grammarTestMojo);
          grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+         grammarTestMojo.setFileEncoding("UTF-8");
          grammarTestMojo.execute();
       } catch (final Exception e) {
          e.printStackTrace();

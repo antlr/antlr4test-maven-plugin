@@ -113,6 +113,11 @@ public class GrammarTestMojo extends AbstractMojo {
     */
    @Parameter(defaultValue = "${basedir}")
    private File baseDir;
+   /**
+    * file encoding
+    */
+   @Parameter(defaultValue = "UTF-8")
+   private String fileEncoding;
 
    /**
     * ctor
@@ -201,6 +206,10 @@ public class GrammarTestMojo extends AbstractMojo {
       return verbose;
    }
 
+   public String getFileEncoding() {
+       return fileEncoding;
+   }
+
    public void setBaseDir(File baseDir) {
       this.baseDir = baseDir;
    }
@@ -241,6 +250,10 @@ public class GrammarTestMojo extends AbstractMojo {
       this.verbose = verbose;
    }
 
+   public void setFileEncoding(String fileEncoding) {
+       this.fileEncoding = fileEncoding;
+   }
+
    /**
     * test a single grammar
     */
@@ -275,9 +288,9 @@ public class GrammarTestMojo extends AbstractMojo {
       System.out.println("Parsing :" + grammarFile.getAbsolutePath());
       ANTLRFileStream antlrFileStream;
       if (true == caseInsensitive) {
-         antlrFileStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath());
+         antlrFileStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath(), fileEncoding);
       } else {
-         antlrFileStream = new ANTLRFileStream(grammarFile.getAbsolutePath());
+         antlrFileStream = new ANTLRFileStream(grammarFile.getAbsolutePath(), fileEncoding);
       }
       final AssertErrorsErrorListener assertErrorsErrorListener = new AssertErrorsErrorListener();
       Lexer lexer = (Lexer) lexerConstructor.newInstance(antlrFileStream);
@@ -296,7 +309,7 @@ public class GrammarTestMojo extends AbstractMojo {
       parser.addErrorListener(assertErrorsErrorListener);
       final Method method = parserClass.getMethod(entryPoint);
       ParserRuleContext parserRuleContext = (ParserRuleContext) method.invoke(parser);
-      assertErrorsErrorListener.assertErrors(new File(grammarFile.getAbsolutePath() + ERRORS_SUFFIX));
+      assertErrorsErrorListener.assertErrors(new File(grammarFile.getAbsolutePath() + ERRORS_SUFFIX), fileEncoding);
       /*
        * show the tree
        */
@@ -311,7 +324,7 @@ public class GrammarTestMojo extends AbstractMojo {
       if (treeFile.exists()) {
          final String lispTree = Trees.toStringTree(parserRuleContext, parser);
          if (null != lispTree) {
-            final String treeFileData = FileUtils.fileRead(treeFile);
+            final String treeFileData = FileUtils.fileRead(treeFile, fileEncoding);
             if (null != treeFileData) {
                if (0 != treeFileData.compareTo(lispTree)) {
                   throw new Exception("Parse tree does not match '" + treeFile.getName() + "'");

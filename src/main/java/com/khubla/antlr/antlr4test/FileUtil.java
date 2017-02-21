@@ -28,8 +28,9 @@
 package com.khubla.antlr.antlr4test;
 
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,23 +77,39 @@ public class FileUtil {
       }
    }
 
-   public static List<String> getNonEmptyLines(File file) throws IOException {
-      final List<String> nonEmptyLines = new ArrayList<String>();
-      BufferedReader br = null;
-      try {
-         br = new BufferedReader(new FileReader(file));
-         String line = br.readLine();
-         while (line != null) {
-            if (!"".equals(line.trim())) {
-               nonEmptyLines.add(line);
-            }
-            line = br.readLine();
-         }
-         return nonEmptyLines;
-      } finally {
-         if (br != null) {
-            br.close();
-         }
-      }
+   public static List<String> getNonEmptyLines(File file, String encoding) throws IOException {
+       final List<String> nonEmptyLines = new ArrayList<String>();
+       BufferedReader br = null;
+       InputStreamReader isr = null;
+       FileInputStream fis = null;
+       try {
+           fis = new FileInputStream(file);
+           try {
+               isr = new InputStreamReader(fis, encoding);
+               try {
+                   br = new BufferedReader(isr);
+                   String line = br.readLine();
+                   while (line != null) {
+                       if (!"".equals(line.trim())) {
+                           nonEmptyLines.add(line);
+                       }
+                       line = br.readLine();
+                   }
+                   return nonEmptyLines;
+               } finally {
+                   if (br != null) {
+                       br.close();
+                   }
+               }
+           } finally {
+               if (isr != null) {
+                   isr.close();
+               }
+           }
+       } finally {
+           if (fis != null) {
+               fis.close();
+           }
+       }
    }
 }
