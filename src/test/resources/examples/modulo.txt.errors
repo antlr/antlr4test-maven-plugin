@@ -1,2 +1,2 @@
 line 1:7 token recognition error at: '%'
-line 1:9 mismatched input 'S' expecting {'=', '+', '*'}
+line 1:9 missing '=' at 'S'
