@@ -33,12 +33,13 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 
-import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
@@ -288,11 +289,11 @@ public class GrammarTestMojo extends AbstractMojo {
       final Constructor<?> lexerConstructor = lexerClass.getConstructor(CharStream.class);
       final Constructor<?> parserConstructor = parserClass.getConstructor(TokenStream.class);
       System.out.println("Parsing :" + grammarFile.getAbsolutePath());
-      ANTLRFileStream antlrFileStream;
+      CharStream antlrFileStream;
       if (true == caseInsensitive) {
          antlrFileStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath(), fileEncoding);
       } else {
-         antlrFileStream = new ANTLRFileStream(grammarFile.getAbsolutePath(), fileEncoding);
+        antlrFileStream = CharStreams.fromPath(grammarFile.toPath(), Charset.forName(fileEncoding));
       }
       final AssertErrorsErrorListener assertErrorsErrorListener = new AssertErrorsErrorListener();
       Lexer lexer = (Lexer) lexerConstructor.newInstance(antlrFileStream);
