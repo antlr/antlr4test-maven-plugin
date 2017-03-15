@@ -35,6 +35,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
+import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
+
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -327,7 +329,17 @@ public class GrammarTestMojo extends AbstractMojo {
             final String treeFileData = FileUtils.fileRead(treeFile, fileEncoding);
             if (null != treeFileData) {
                if (0 != treeFileData.compareTo(lispTree)) {
-                  throw new Exception("Parse tree does not match '" + treeFile.getName() + "'");
+                  StringBuilder sb = new StringBuilder("Parse tree does not match '" + treeFile.getName() + "'. Differences: ");
+                  boolean first = false;
+                  for (DiffMatchPatch.Diff diff : new DiffMatchPatch().diffMain(treeFileData, lispTree)) {
+                     sb.append(diff.toString());
+                     if (first) {
+                        first = false;
+                     } else {
+                        sb.append(", ");
+                     }
+                  }
+                  throw new Exception(sb.toString());
                } else {
                   System.out.println("Parse tree for '" + grammarFile.getName() + "' matches '" + treeFile.getName() + "'");
                }
