@@ -40,7 +40,7 @@ Example usage
 Parameters
 ---------
 
-###GrammarName
+### GrammarName
 
 Required name of the grammar.  This should match the name of the grammar defined in the grammar ".g4" file.
 
@@ -48,7 +48,7 @@ Required name of the grammar.  This should match the name of the grammar defined
 <grammarName>PHP</grammarName>
 ```
 
-###caseInsensitive
+### caseInsensitive
 
 An optional boolean parameter used to enable a caseInsensitive lexer for case-insensitive languages such as PHP
 
@@ -56,7 +56,7 @@ An optional boolean parameter used to enable a caseInsensitive lexer for case-in
 <caseInsensitive>true</caseInsensitive>
 ```
 
-###entryPoint
+### entryPoint
 
 Required name of the grammar rule to use as the test entry point
 
@@ -64,7 +64,7 @@ Required name of the grammar rule to use as the test entry point
 <entryPoint>htmlDocument</entryPoint>
 ```
 
-###enabled
+### enabled
 
 Optional boolean enable-disable flag
 
@@ -72,7 +72,7 @@ Optional boolean enable-disable flag
 <enabled>true<\enabled>
 ```
 
-###verbose
+### verbose
 
 Optionally produce verbose output
 
@@ -80,7 +80,7 @@ Optionally produce verbose output
 <verbose>true</verbose>
 ```
 
-###showTree
+### showTree
 
 Optionally show the LISP grammar tree
 
@@ -88,7 +88,7 @@ Optionally show the LISP grammar tree
 <showTree>false</showTree>
 ```
 
-###exampleFiles
+### exampleFiles
 
 Required relative path to the example files
 
@@ -96,7 +96,7 @@ Required relative path to the example files
 <exampleFiles>src/test/resources/examples/</exampleFiles>
 ```
 
-###packageName
+### packageName
 
 Optional package name to find the Lexer and Parser classes in
 
@@ -104,7 +104,7 @@ Optional package name to find the Lexer and Parser classes in
 <packageName></packageName>
 ```
 
-###testFileExtension 
+### testFileExtension 
 
 Optional file extension of test files
 
@@ -112,7 +112,7 @@ Optional file extension of test files
 <testFileExtension>.php</testFileExtension>
 ```
 
-###fileEncoding
+### fileEncoding
 
 Optional file encoding. The default value if UTF-8.
 
