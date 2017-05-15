@@ -1,0 +1,4 @@
+line 1:0 token recognition error at: 'x'
+line 1:4 token recognition error at: 'y'
+line 1:2 mismatched input '+' expecting {'(', '~', '0', 'S', 'a', 'b', 'c', 'd', 'e', 'A', 'E'}
+
