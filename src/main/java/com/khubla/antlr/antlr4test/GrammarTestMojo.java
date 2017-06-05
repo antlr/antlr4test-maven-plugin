@@ -76,7 +76,7 @@ public class GrammarTestMojo extends AbstractMojo {
     * grammar Name
     */
    @Parameter
-   private boolean caseInsensitive = false;
+   private CaseInsensitiveType caseInsensitiveType = CaseInsensitiveType.None;
    /**
     * entry point method on the parser
     */
@@ -193,8 +193,8 @@ public class GrammarTestMojo extends AbstractMojo {
       return testFileExtension;
    }
 
-   public boolean isCaseInsensitive() {
-      return caseInsensitive;
+   public CaseInsensitiveType getCaseInsensitiveType() {
+      return caseInsensitiveType;
    }
 
    public boolean isEnabled() {
@@ -217,8 +217,8 @@ public class GrammarTestMojo extends AbstractMojo {
       this.baseDir = baseDir;
    }
 
-   public void setCaseInsensitive(boolean caseInsensitive) {
-      this.caseInsensitive = caseInsensitive;
+   public void setCaseInsensitiveType(CaseInsensitiveType caseInsensitiveType) {
+      this.caseInsensitiveType = caseInsensitiveType;
    }
 
    public void setEnabled(boolean enabled) {
@@ -290,10 +290,10 @@ public class GrammarTestMojo extends AbstractMojo {
       final Constructor<?> parserConstructor = parserClass.getConstructor(TokenStream.class);
       System.out.println("Parsing :" + grammarFile.getAbsolutePath());
       CharStream antlrFileStream;
-      if (true == caseInsensitive) {
-         antlrFileStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath(), fileEncoding);
+      if (caseInsensitiveType == CaseInsensitiveType.None) {
+         antlrFileStream = CharStreams.fromPath(grammarFile.toPath(), Charset.forName(fileEncoding));
       } else {
-        antlrFileStream = CharStreams.fromPath(grammarFile.toPath(), Charset.forName(fileEncoding));
+         antlrFileStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath(), fileEncoding, caseInsensitiveType);
       }
       final AssertErrorsErrorListener assertErrorsErrorListener = new AssertErrorsErrorListener();
       Lexer lexer = (Lexer) lexerConstructor.newInstance(antlrFileStream);
