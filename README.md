@@ -48,12 +48,17 @@ Required name of the grammar.  This should match the name of the grammar defined
 <grammarName>PHP</grammarName>
 ```
 
-### caseInsensitive
+### caseInsensitiveType
 
-An optional boolean parameter used to enable a caseInsensitive lexer for case-insensitive languages such as PHP
+An optional enum parameter used to enable a caseInsensitive lexer for case-insensitive languages such as PHP, Pascal, T-SQL, etc.
+
+Available values:
+* `None` - does not activate a case insensitive mode (by default).
+* `lower` - all token values should be written in lower-case: `TOKEN: 'asdf'`.
+* `UPPER` - all token values should be written in UPPER-case: `TOKEN: 'ASDF'`.
 
 ```
-<caseInsensitive>true</caseInsensitive>
+<caseInsensitiveType>UPPER</caseInsensitiveType>
 ```
 
 ### entryPoint
