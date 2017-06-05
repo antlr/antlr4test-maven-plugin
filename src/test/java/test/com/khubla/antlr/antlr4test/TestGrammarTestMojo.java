@@ -44,7 +44,8 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
     * file
     */
    private static final String GENERIC_POMFILE = "src/test/resources/generic-pom.xml";
-   private static final String CASEINSENSITIVE_POMFILE = "src/test/resources/caseinsensitive-pom.xml";
+   private static final String CASEINSENSITIVE_lower_POMFILE = "src/test/resources/caseInsensitive_lower-pom.xml";
+   private static final String CASEINSENSITIVE_UPPER_POMFILE = "src/test/resources/caseInsensitive_UPPER-pom.xml";
    /**
     * goal
     */
@@ -72,13 +73,24 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
    /**
     * Basic test of case insensitive execution
     */
-   public void testCaseInsensitiveExecution() throws Exception {
+   public void testCaseInsensitiveLowerExecution() throws Exception {
+      testCaseInsensitiveExecution(CASEINSENSITIVE_lower_POMFILE);
+   }
+
+   /**
+    * Basic test of case insensitive execution
+    */
+   public void testCaseInsensitiveUpperExecution() throws Exception {
+      testCaseInsensitiveExecution(CASEINSENSITIVE_UPPER_POMFILE);
+   }
+
+   private void testCaseInsensitiveExecution(String caseInsensitivePomXml) {
       try {
          /*
           * pom
           */
-         System.out.println("Testing '" + CASEINSENSITIVE_POMFILE + "'");
-         final File pom = getTestFile(CASEINSENSITIVE_POMFILE);
+         System.out.println("Testing '" + caseInsensitivePomXml + "'");
+         final File pom = getTestFile(caseInsensitivePomXml);
          assertNotNull(pom);
          assertTrue(pom.exists());
          /*
