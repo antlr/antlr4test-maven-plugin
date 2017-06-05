@@ -7,7 +7,7 @@
 	<version>1.9-SNAPSHOT</version>
 	<name>khubla.com Antlr4 test mojo</name>
 	<description>antlr4test-maven-plugin is a maven mojo for testing Antlr4 grammars</description>
-	<url>https://github.com/teverett/antlr4test-maven-plugin</url>
+	<url>https://github.com/antlr/antlr4test-maven-plugin</url>
 	<developers>
 		<developer>
 			<id>teverett</id>
@@ -23,11 +23,11 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/teverett/antlr4test-maven-plugin.git</url>
+		<url>https://github.com/antlr/antlr4test-maven-plugin.git</url>
 	</scm>
 	<organization>
-		<name>khubla.com</name>
-		<url>http://www.khubla.com</url>
+		<name>antlr</name>
+		<url>https://github.com/antlr</url>
 	</organization>
 	<properties>
 		<maven.version>3.3.9</maven.version>
