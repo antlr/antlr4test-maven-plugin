@@ -1,25 +1,21 @@
-antlr4test-maven-plugin
-===============
+# antlr4test-maven-plugin
 
-Travis Status
----------
+## Travis Status
 
-<a href="https://travis-ci.org/teverett/antlr4test-maven-plugin"><img src="https://api.travis-ci.org/teverett/antlr4test-maven-plugin.png"></a>
+[![antlr4test-maven-plugin travis-ci status](https://api.travis-ci.org/antlr/antlr4test-maven-plugin.png)](https://travis-ci.org/antlr/antlr4test-maven-plugin)
 
 Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
 
-Maven Coordinates
--------------
+## Maven Coordinates
 
-```
+```xml
 <groupId>com.khubla.antlr</groupId>
 <artifactId>antlr4test-maven-plugin</artifactId>
 <version>1.6</version>
 <packaging>jar</packaging>
 ```
 
-Example usage
----------
+## Example usage
 
 ```xml
 <plugin>
@@ -37,14 +33,13 @@ Example usage
 </plugin>
 ```
 
-Parameters
----------
+## Parameters
 
 ### GrammarName
 
 Required name of the grammar.  This should match the name of the grammar defined in the grammar ".g4" file.
 
-```
+```xml
 <grammarName>PHP</grammarName>
 ```
 
@@ -57,7 +52,7 @@ Available values:
 * `lower` - all token values should be written in lower-case: `TOKEN: 'asdf'`.
 * `UPPER` - all token values should be written in UPPER-case: `TOKEN: 'ASDF'`.
 
-```
+```xml
 <caseInsensitiveType>UPPER</caseInsensitiveType>
 ```
 
@@ -65,7 +60,7 @@ Available values:
 
 Required name of the grammar rule to use as the test entry point
 
-```
+```xml
 <entryPoint>htmlDocument</entryPoint>
 ```
 
@@ -73,7 +68,7 @@ Required name of the grammar rule to use as the test entry point
 
 Optional boolean enable-disable flag
 
-```
+```xml
 <enabled>true<\enabled>
 ```
 
@@ -81,7 +76,7 @@ Optional boolean enable-disable flag
 
 Optionally produce verbose output
 
-```
+```xml
 <verbose>true</verbose>
 ```
 
@@ -89,7 +84,7 @@ Optionally produce verbose output
 
 Optionally show the LISP grammar tree
 
-```
+```xml
 <showTree>false</showTree>
 ```
 
@@ -97,7 +92,7 @@ Optionally show the LISP grammar tree
 
 Required relative path to the example files
 
-```
+```xml
 <exampleFiles>src/test/resources/examples/</exampleFiles>
 ```
 
@@ -105,7 +100,7 @@ Required relative path to the example files
 
 Optional package name to find the Lexer and Parser classes in
 
-```
+```xml
 <packageName></packageName>
 ```
 
@@ -113,7 +108,7 @@ Optional package name to find the Lexer and Parser classes in
 
 Optional file extension of test files
 
-```
+```xml
 <testFileExtension>.php</testFileExtension>
 ```
 
@@ -121,6 +116,6 @@ Optional file extension of test files
 
 Optional file encoding. The default value if UTF-8.
 
-```
+```xml
 <fileEncoding>Shift_JIS</fileEncoding>
 ```
