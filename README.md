@@ -1,10 +1,19 @@
 # antlr4test-maven-plugin
 
+Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
+
 ## Travis Status
 
 [![antlr4test-maven-plugin travis-ci status](https://api.travis-ci.org/antlr/antlr4test-maven-plugin.png)](https://travis-ci.org/antlr/antlr4test-maven-plugin)
 
-Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
+## Coverity Status
+
+<a href="https://scan.coverity.com/projects/teverett-antlr4test-maven-plugin">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/13302/badge.svg"/>
+</a>
+
+
 
 ## Maven Coordinates
 
