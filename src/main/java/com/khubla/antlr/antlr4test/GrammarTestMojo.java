@@ -36,8 +36,6 @@ import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
-
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -52,6 +50,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -210,7 +209,7 @@ public class GrammarTestMojo extends AbstractMojo {
    }
 
    public String getFileEncoding() {
-       return fileEncoding;
+      return fileEncoding;
    }
 
    public void setBaseDir(File baseDir) {
@@ -254,7 +253,7 @@ public class GrammarTestMojo extends AbstractMojo {
    }
 
    public void setFileEncoding(String fileEncoding) {
-       this.fileEncoding = fileEncoding;
+      this.fileEncoding = fileEncoding;
    }
 
    /**
@@ -331,14 +330,9 @@ public class GrammarTestMojo extends AbstractMojo {
             if (null != treeFileData) {
                if (0 != treeFileData.compareTo(lispTree)) {
                   StringBuilder sb = new StringBuilder("Parse tree does not match '" + treeFile.getName() + "'. Differences: ");
-                  boolean first = false;
                   for (DiffMatchPatch.Diff diff : new DiffMatchPatch().diffMain(treeFileData, lispTree)) {
                      sb.append(diff.toString());
-                     if (first) {
-                        first = false;
-                     } else {
-                        sb.append(", ");
-                     }
+                     sb.append(", ");
                   }
                   throw new Exception(sb.toString());
                } else {
