@@ -1,19 +1,10 @@
+[![Travis](https://api.travis-ci.org/antlr/antlr4test-maven-plugin.png)](https://travis-ci.org/antlr/antlr4test-maven-plugin)
+[![Coverity Scan](https://scan.coverity.com/projects/13302/badge.svg)](https://scan.coverity.com/projects/teverett-antlr4test-maven-plugin)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/47b1ccdfcf5b4af4abdef44328f8cb26)](https://www.codacy.com/app/teverett/antlr4test-maven-plugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=teverett/antlr4test-maven-plugin&amp;utm_campaign=Badge_Grade)
+
 # antlr4test-maven-plugin
 
 Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
-
-## Travis Status
-
-[![antlr4test-maven-plugin travis-ci status](https://api.travis-ci.org/antlr/antlr4test-maven-plugin.png)](https://travis-ci.org/antlr/antlr4test-maven-plugin)
-
-## Coverity Status
-
-<a href="https://scan.coverity.com/projects/teverett-antlr4test-maven-plugin">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/13302/badge.svg"/>
-</a>
-
-
 
 ## Maven Coordinates
 
