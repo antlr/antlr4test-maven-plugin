@@ -143,7 +143,7 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
          assertTrue(pom.exists());
          final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
          assertNotNull(grammarTestMojo);
-         assertTrue(grammarTestMojo.isVerbose() == true);
+         assertTrue(grammarTestMojo.isVerbose());
          assertTrue(grammarTestMojo.getExampleFiles().compareTo("src/test/resources/examples") == 0);
          assertTrue(grammarTestMojo.getEntryPoint().compareTo("equation") == 0);
          assertTrue(grammarTestMojo.getTestFileExtension().compareTo(".txt") == 0);

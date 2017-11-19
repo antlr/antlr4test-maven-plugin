@@ -58,7 +58,7 @@ public class FileUtil {
             for (int i = 0; i < list.length; i++) {
                final String fileName = dir + "/" + list[i];
                final File f2 = new File(fileName);
-               if (false == f2.isHidden()) {
+               if (!f2.isHidden()) {
                   if (f2.isDirectory()) {
                      ret.addAll(getAllFiles(fileName, extension));
                   } else {
