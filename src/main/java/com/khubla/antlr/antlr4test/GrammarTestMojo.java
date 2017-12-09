@@ -136,10 +136,10 @@ public class GrammarTestMojo extends AbstractMojo {
          if (verbose) {
             System.out.println("baseDir: " + baseDir);
             System.out.println("exampleFiles: " + exampleFiles);
-            if (false == baseDir.exists()) {
+            if (!baseDir.exists()) {
                throw new MojoExecutionException("baseDir '" + baseDir.getAbsolutePath() + "' does not exist");
             }
-            if (false == getExampleFilesDir().exists()) {
+            if (!getExampleFilesDir().exists()) {
                throw new MojoExecutionException("exampleFiles directory'" + exampleFiles + "' does not exist");
             }
          }
