@@ -12,3 +12,4 @@
 .idea/
 *.iml
 /**/gen
+/pom.xml.versionsBackup
