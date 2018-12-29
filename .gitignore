@@ -13,3 +13,5 @@
 *.iml
 /**/gen
 /pom.xml.versionsBackup
+
+/nbproject/
