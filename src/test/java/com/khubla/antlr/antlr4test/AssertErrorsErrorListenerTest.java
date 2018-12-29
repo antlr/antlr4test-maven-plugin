@@ -3,11 +3,8 @@
  */
 package com.khubla.antlr.antlr4test;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +35,7 @@ public class AssertErrorsErrorListenerTest {
     }
     
     /**
-     * Test of replacePlaceholders method, of class AssertErrorsErrorListener.
+     * Test of asserts method, of class AssertErrorsErrorListener.
      */
     @Test
     public void testAssertErrors_Matching() throws AssertErrorsException {
