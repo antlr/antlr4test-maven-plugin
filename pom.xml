@@ -33,7 +33,7 @@
 		<url>https://github.com/antlr</url>
 	</organization>
 	<properties>
-		<maven.version>3.6.0</maven.version>
+		<maven.version>3.6.3</maven.version>
 		<antlr.version>4.8-1</antlr.version>
 	</properties>
 	<dependencies>
@@ -65,7 +65,7 @@
                 	<dependency>
                     <groupId>junit</groupId>
                     <artifactId>junit</artifactId>
-                    <version>4.12</version>
+                    <version>4.13</version>
                     <scope>test</scope>
                 </dependency>
 		<dependency>
@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
 			<artifactId>maven-plugin-annotations</artifactId>
-			<version>${maven.version}</version>
+			<version>3.6.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -99,7 +99,7 @@
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-utils</artifactId>
-			<version>3.1.1</version>
+			<version>3.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bitbucket.cowwoc</groupId>
@@ -111,7 +111,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>3.8.1</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
@@ -205,7 +205,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>3.0.1</version>
+						<version>3.1.0</version>
 						<executions>
 							<execution>
 								<id>attach-sources</id>
@@ -218,7 +218,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.0.1</version>
+						<version>3.1.1</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
