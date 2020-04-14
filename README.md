@@ -1,6 +1,7 @@
 [![Travis](https://api.travis-ci.org/antlr/antlr4test-maven-plugin.png)](https://travis-ci.org/antlr/antlr4test-maven-plugin)
 [![Coverity Scan](https://scan.coverity.com/projects/13302/badge.svg)](https://scan.coverity.com/projects/teverett-antlr4test-maven-plugin)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/47b1ccdfcf5b4af4abdef44328f8cb26)](https://www.codacy.com/app/teverett/antlr4test-maven-plugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=teverett/antlr4test-maven-plugin&amp;utm_campaign=Badge_Grade)
+[![DepShield Badge](https://depshield.sonatype.org/badges/teverett/antlr4test-maven-plugin/depshield.svg)](https://depshield.github.io)
 
 # antlr4test-maven-plugin
 
@@ -11,7 +12,7 @@ Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
 ```xml
 <groupId>com.khubla.antlr</groupId>
 <artifactId>antlr4test-maven-plugin</artifactId>
-<version>1.6</version>
+<version>1.11</version>
 <packaging>jar</packaging>
 ```
 
