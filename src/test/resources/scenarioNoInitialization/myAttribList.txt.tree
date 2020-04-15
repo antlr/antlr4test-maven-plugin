@@ -1,0 +1,1 @@
+(attrib_list (attrib (variable_name MyVar) = (function FA) ( )) (attrib (variable_name FB) = (function FA) ( (variable_name MyVar) )) (attrib (variable_name MyVar) = (function FC) ( )) (attrib (variable_name FD) = function FC ( (variable_name MyVar) )) <EOF>)
