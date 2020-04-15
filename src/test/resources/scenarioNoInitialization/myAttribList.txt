@@ -1,0 +1,4 @@
+MyVar = FA()
+FB = FA(MyVar)
+MyVar = FC()
+FD = FC  (MyVar)

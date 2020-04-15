@@ -111,6 +111,19 @@ public class GrammarTestMojo extends AbstractMojo {
 	private String fileEncoding;
 
 	/**
+	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before
+	 * test starts
+	 */
+	@Parameter
+	private String grammarInitializer = null;
+
+	/**
+	 * List of test scenarios to be executed.
+	 */
+	@Parameter
+	private List<Scenario> scenarios = null;
+
+	/**
 	 * ctor
 	 * 
 	 * @throws MalformedURLException exception for malformed url *eye roll*
@@ -121,25 +134,39 @@ public class GrammarTestMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			/*
-			 * drop message
-			 */
-			if (verbose) {
-				System.out.println("baseDir: " + baseDir);
-				System.out.println("exampleFiles: " + exampleFiles);
-				if (!baseDir.exists()) {
-					throw new MojoExecutionException("baseDir '" + baseDir.getAbsolutePath() + "' does not exist");
-				}
-				if (!getExampleFilesDir().exists()) {
-					throw new MojoExecutionException("exampleFiles directory'" + exampleFiles + "' does not exist");
-				}
+			if (scenarios == null) {
+				// No scenario configuration has been given. Creates a default one.
+				this.scenarios = new ArrayList<Scenario>();
+			}
+			if (this.grammarName != null && !"".equals(this.grammarName)) {
+				//
+				// Create default scenario if grammar name is given.
+				// Injects values from plugin configurations.
+				// This allows backward compatibility with old configuration style.
+				//
+				// Does not check if plugin configuration is ok to maintain same behavior as
+				// before.
+				//
+				Scenario defaultScenario = new Scenario();
+				defaultScenario.setScenarioName("Default Scenario");
+				defaultScenario.setGrammarName(grammarName);
+				defaultScenario.setCaseInsensitiveType(caseInsensitiveType);
+				defaultScenario.setBaseDir(baseDir);
+				defaultScenario.setEnabled(enabled);
+				defaultScenario.setEntryPoint(entryPoint);
+				defaultScenario.setTestFileExtension(testFileExtension);
+				defaultScenario.setExampleFiles(exampleFiles);
+				defaultScenario.setPackageName(packageName);
+				defaultScenario.setFileEncoding(fileEncoding);
+				defaultScenario.setGrammarInitializer(grammarInitializer);
+				defaultScenario.setShowTree(showTree);
+				defaultScenario.setVerbose(verbose);
+				this.scenarios.add(defaultScenario);
 			}
 			/*
 			 * test grammars
 			 */
-			if (enabled) {
-				testGrammars();
-			}
+			testScenarios();
 		} catch (final Exception e) {
 			e.printStackTrace();
 			throw new MojoExecutionException("Unable execute mojo", e);
@@ -150,25 +177,12 @@ public class GrammarTestMojo extends AbstractMojo {
 		return baseDir;
 	}
 
-	/**
-	 * get a classloader that can find the files we need
-	 */
-	private ClassLoader getClassLoader() throws MalformedURLException, ClassNotFoundException {
-		final URL antlrGeneratedURL = new File(baseDir + "/target/classes").toURI().toURL();
-		final URL[] urls = new URL[] { antlrGeneratedURL };
-		return new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
-	}
-
 	public String getEntryPoint() {
 		return entryPoint;
 	}
 
 	public String getExampleFiles() {
 		return exampleFiles;
-	}
-
-	private File getExampleFilesDir() {
-		return new File(baseDir + "/" + exampleFiles);
 	}
 
 	public String getGrammarName() {
@@ -247,123 +261,42 @@ public class GrammarTestMojo extends AbstractMojo {
 		this.fileEncoding = fileEncoding;
 	}
 
-	/**
-	 * test a single grammar
-	 */
-	private void testGrammar(File grammarFile) throws Exception {
-		/*
-		 * figure out class names
-		 */
-		String nn = grammarName;
-		if (null != packageName) {
-			nn = packageName + "." + grammarName;
-		}
-		final String lexerClassName = nn + "Lexer";
-		final String parserClassName = nn + "Parser";
-		if (verbose) {
-			System.out.println("Lexer classname is: " + lexerClassName);
-			System.out.println("Parser classname is: " + parserClassName);
-		}
-		/*
-		 * classloader
-		 */
-		final ClassLoader classLoader = getClassLoader();
-		/*
-		 * get the classes we need
-		 */
-		final Class<? extends Lexer> lexerClass = classLoader.loadClass(lexerClassName).asSubclass(Lexer.class);
-		final Class<? extends Parser> parserClass = classLoader.loadClass(parserClassName).asSubclass(Parser.class);
-		/*
-		 * get ctors
-		 */
-		final Constructor<?> lexerConstructor = lexerClass.getConstructor(CharStream.class);
-		final Constructor<?> parserConstructor = parserClass.getConstructor(TokenStream.class);
-		System.out.println("Parsing :" + grammarFile.getAbsolutePath());
-		CharStream antlrFileStream;
-		if (caseInsensitiveType == CaseInsensitiveType.None) {
-			antlrFileStream = CharStreams.fromPath(grammarFile.toPath(), Charset.forName(fileEncoding));
-		} else {
-			antlrFileStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath(), fileEncoding, caseInsensitiveType);
-		}
-		final AssertErrorsErrorListener assertErrorsErrorListener = new AssertErrorsErrorListener();
-		Lexer lexer = (Lexer) lexerConstructor.newInstance(antlrFileStream);
-		lexer.addErrorListener(assertErrorsErrorListener);
-		final CommonTokenStream tokens = new CommonTokenStream(lexer);
-		if (verbose) {
-			tokens.fill();
-			for (final Object tok : tokens.getTokens()) {
-				System.out.println(tok);
-			}
-		}
-		/*
-		 * get parser
-		 */
-		Parser parser = (Parser) parserConstructor.newInstance(tokens);
-		parser.addErrorListener(assertErrorsErrorListener);
-		final Method method = parserClass.getMethod(entryPoint);
-		ParserRuleContext parserRuleContext = (ParserRuleContext) method.invoke(parser);
-		assertErrorsErrorListener.assertErrors(new File(grammarFile.getAbsolutePath() + ERRORS_SUFFIX), fileEncoding);
-		/*
-		 * show the tree
-		 */
-		if (showTree) {
-			final String lispTree = Trees.toStringTree(parserRuleContext, parser);
-			System.out.println(lispTree);
-		}
-		/*
-		 * check syntax
-		 */
-		final File treeFile = new File(grammarFile.getAbsolutePath() + TREE_SUFFIX);
-		if (treeFile.exists()) {
-			final String lispTree = Trees.toStringTree(parserRuleContext, parser);
-			if (null != lispTree) {
-				final String treeFileData = FileUtils.fileRead(treeFile, fileEncoding);
-				if (null != treeFileData) {
-					if (0 != treeFileData.compareTo(lispTree)) {
-						StringBuilder sb = new StringBuilder("Parse tree does not match '" + treeFile.getName() + "'. Differences: ");
-						for (DiffMatchPatch.Diff diff : new DiffMatchPatch().diffMain(treeFileData, lispTree)) {
-							sb.append(diff.toString());
-							sb.append(", ");
-						}
-						throw new Exception(sb.toString());
-					} else {
-						System.out.println("Parse tree for '" + grammarFile.getName() + "' matches '" + treeFile.getName() + "'");
-					}
-				}
-			}
-		}
-		/*
-		 * yup
-		 */
-		parser = null;
-		lexer = null;
-		parserRuleContext = null;
-		antlrFileStream = null;
+	public List<Scenario> getScenarios() {
+		return Collections.unmodifiableList(scenarios);
 	}
 
-	private void testGrammars() throws Exception {
-		/*
-		 * iterate examples
-		 */
-		final List<File> exampleFiles = FileUtil.getAllFiles(getExampleFilesDir().getAbsolutePath());
-		if (null != exampleFiles) {
-			for (final File file : exampleFiles) {
-				/*
-				 * test grammar
-				 */
-				if ((!file.getName().endsWith(ERRORS_SUFFIX)) && (!file.getName().endsWith(TREE_SUFFIX))) {
-					/*
-					 * file extension
-					 */
-					if ((testFileExtension == null) || ((testFileExtension != null) && (file.getName().endsWith(testFileExtension)))) {
-						testGrammar(file);
+	public void setScenarios(List<Scenario> scenarios) {
+		this.scenarios = scenarios;
+	}
+
+	private void testScenarios() throws Exception {
+		for (Scenario scenario : scenarios) {
+			/*
+			 * drop message
+			 */
+			System.out.println("Evaluating Scenario: " + scenario.getScenarioName());
+			if (scenario.isVerbose()) {
+				System.out.println("baseDir: " + scenario.getBaseDir());
+				System.out.println("exampleFiles: " + scenario.getExampleFiles());
+				// only check errors if scenario is enabled
+				// so other scenarios are not prevented of being executed.
+				if (scenario.isEnabled()) {
+					if (!scenario.getBaseDir().exists()) {
+						throw new MojoExecutionException("baseDir '" + baseDir.getAbsolutePath() + "' does not exist");
+					}
+					if (!scenario.getExampleFilesDir().exists()) {
+						throw new MojoExecutionException("exampleFiles directory'" + exampleFiles + "' does not exist");
 					}
 				}
-				/*
-				 * gc
-				 */
-				System.gc();
+			}
+			if (scenario.isEnabled()) {
+				ScenarioExecutor executor = new ScenarioExecutor(scenario);
+				executor.testGrammars();
+				executor = null;
+			} else {
+				System.out.println("Scenario " + scenario.getScenarioName() + " is disabled. Skipping.");
 			}
 		}
 	}
+
 }

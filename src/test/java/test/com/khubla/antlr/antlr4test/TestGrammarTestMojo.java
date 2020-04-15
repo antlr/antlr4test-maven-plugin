@@ -29,127 +29,200 @@ package test.com.khubla.antlr.antlr4test;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import com.khubla.antlr.antlr4test.GrammarTestMojo;
+import com.khubla.antlr.antlr4test.Scenario;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * @author Tom Everett
  */
 public class TestGrammarTestMojo extends AbstractMojoTestCase {
-   /**
-    * file
-    */
-   private static final String GENERIC_POMFILE = "src/test/resources/generic-pom.xml";
-   private static final String CASEINSENSITIVE_lower_POMFILE = "src/test/resources/caseInsensitive_lower-pom.xml";
-   private static final String CASEINSENSITIVE_UPPER_POMFILE = "src/test/resources/caseInsensitive_UPPER-pom.xml";
-   /**
-    * goal
-    */
-   private static final String TEST_GOAL = "test";
+	/**
+	 * file
+	 */
+	private static final String GENERIC_POMFILE = "src/test/resources/generic-pom.xml";
+	private static final String CASEINSENSITIVE_lower_POMFILE = "src/test/resources/caseInsensitive_lower-pom.xml";
+	private static final String CASEINSENSITIVE_UPPER_POMFILE = "src/test/resources/caseInsensitive_UPPER-pom.xml";
+	private static final String GRAMMAR_INIT_POMFILE = "src/test/resources/grammarInitializer-pom.xml";
+	private static final String SCENARIO_POMFILE = "src/test/resources/scenarios-pom.xml";
 
-   protected String getAbsolutePath(String relativePath) {
-      final ClassLoader classLoader = getClass().getClassLoader();
-      final URL resource = classLoader.getResource(".");
-      final File file = new File(resource.getFile(), relativePath);
-      return file.getAbsolutePath();
-   }
+	/**
+	 * Scenario Names
+	 */
 
-   @Override
-   protected void setUp() throws Exception {
-      // required
-      super.setUp();
-   }
+	private static final String GENERIC_POM = "generic-pom";
+	private static final String CASE_UPPER = "CaseInsensitive_UPPER";
+	private static final String CASE_LOWER = "CaseInsensitive_lower";
+	private static final String PACKAGE_NO_INIT = "Package-Without-Initialization";
+	private static final String PACKAGE_INIT = "Package-Initialize-IgnoreSpaces";
+	/**
+	 * goal
+	 */
+	private static final String TEST_GOAL = "test";
 
-   @Override
-   protected void tearDown() throws Exception {
-      // required
-      super.tearDown();
-   }
+	protected String getAbsolutePath(String relativePath) {
+		final ClassLoader classLoader = getClass().getClassLoader();
+		final URL resource = classLoader.getResource(".");
+		final File file = new File(resource.getFile(), relativePath);
+		return file.getAbsolutePath();
+	}
 
-   /**
-    * Basic test of case insensitive execution
-    */
-   public void testCaseInsensitiveLowerExecution() throws Exception {
-      testCaseInsensitiveExecution(CASEINSENSITIVE_lower_POMFILE);
-   }
+	@Override
+	protected void setUp() throws Exception {
+		// required
+		super.setUp();
+	}
 
-   /**
-    * Basic test of case insensitive execution
-    */
-   public void testCaseInsensitiveUpperExecution() throws Exception {
-      testCaseInsensitiveExecution(CASEINSENSITIVE_UPPER_POMFILE);
-   }
+	@Override
+	protected void tearDown() throws Exception {
+		// required
+		super.tearDown();
+	}
 
-   private void testCaseInsensitiveExecution(String caseInsensitivePomXml) {
-      try {
-         /*
-          * pom
-          */
-         System.out.println("Testing '" + caseInsensitivePomXml + "'");
-         final File pom = getTestFile(caseInsensitivePomXml);
-         assertNotNull(pom);
-         assertTrue(pom.exists());
-         /*
-          * test
-          */
-         final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
-         assertNotNull(grammarTestMojo);
-         grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
-         grammarTestMojo.setFileEncoding("UTF-8");
-         grammarTestMojo.execute();
-      } catch (final Exception e) {
-         e.printStackTrace();
-         Assert.fail();
-      }
-   }
+	/**
+	 * Basic test of case insensitive execution
+	 */
+	public void testCaseInsensitiveLowerExecution() throws Exception {
+		testCaseInsensitiveExecution(CASEINSENSITIVE_lower_POMFILE);
+	}
 
-   /**
-    * Basic test of execution
-    */
-   public void testGenericExecution() throws Exception {
-      try {
-         /*
-          * pom
-          */
-         System.out.println("Testing '" + GENERIC_POMFILE + "'");
-         final File pom = getTestFile(GENERIC_POMFILE);
-         assertNotNull(pom);
-         assertTrue(pom.exists());
-         /*
-          * test
-          */
-         final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
-         assertNotNull(grammarTestMojo);
-         grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
-         grammarTestMojo.setFileEncoding("UTF-8");
-         grammarTestMojo.execute();
-      } catch (final Exception e) {
-         e.printStackTrace();
-         Assert.fail();
-      }
-   }
+	/**
+	 * Basic test of case insensitive execution
+	 */
+	public void testCaseInsensitiveUpperExecution() throws Exception {
+		testCaseInsensitiveExecution(CASEINSENSITIVE_UPPER_POMFILE);
+	}
 
-   /**
-    * Basic test of instantiation
-    */
-   public void testInstatiation() throws Exception {
-      try {
-         final File pom = getTestFile(GENERIC_POMFILE);
-         assertNotNull(pom);
-         assertTrue(pom.exists());
-         final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
-         assertNotNull(grammarTestMojo);
-         assertTrue(grammarTestMojo.isVerbose());
-         assertTrue(grammarTestMojo.getExampleFiles().compareTo("src/test/resources/examples") == 0);
-         assertTrue(grammarTestMojo.getEntryPoint().compareTo("equation") == 0);
-         assertTrue(grammarTestMojo.getTestFileExtension().compareTo(".txt") == 0);
-      } catch (final Exception e) {
-         e.printStackTrace();
-         Assert.fail();
-      }
-   }
+	private void testCaseInsensitiveExecution(String caseInsensitivePomXml) {
+		try {
+			/*
+			 * pom
+			 */
+			System.out.println("Testing '" + caseInsensitivePomXml + "'");
+			final File pom = getTestFile(caseInsensitivePomXml);
+			assertNotNull(pom);
+			assertTrue(pom.exists());
+			/*
+			 * test
+			 */
+			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
+			assertNotNull(grammarTestMojo);
+			grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+			grammarTestMojo.setFileEncoding("UTF-8");
+			grammarTestMojo.execute();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	/**
+	 * Basic test of execution
+	 */
+	public void testGenericExecution() throws Exception {
+		try {
+			/*
+			 * pom
+			 */
+			System.out.println("Testing '" + GENERIC_POMFILE + "'");
+			final File pom = getTestFile(GENERIC_POMFILE);
+			assertNotNull(pom);
+			assertTrue(pom.exists());
+			/*
+			 * test
+			 */
+			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
+			assertNotNull(grammarTestMojo);
+			grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+			grammarTestMojo.setFileEncoding("UTF-8");
+			grammarTestMojo.execute();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
+
+	/**
+	 * Basic test of instantiation
+	 */
+	public void testInstatiation() throws Exception {
+		try {
+			final File pom = getTestFile(GENERIC_POMFILE);
+			assertNotNull(pom);
+			assertTrue(pom.exists());
+			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
+			assertNotNull(grammarTestMojo);
+			assertTrue(grammarTestMojo.isVerbose());
+			assertTrue(grammarTestMojo.getExampleFiles().compareTo("src/test/resources/examples") == 0);
+			assertTrue(grammarTestMojo.getEntryPoint().compareTo("equation") == 0);
+			assertTrue(grammarTestMojo.getTestFileExtension().compareTo(".txt") == 0);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			Assert.fail("Unexpected exception " + e);
+		}
+	}
+
+	/**
+	 * Basic test of instantiation
+	 */
+	public void testGrammarInitializer() throws Exception {
+		try {
+			System.out.println("Testing '" + GRAMMAR_INIT_POMFILE + "'");
+			final File pom = getTestFile(GENERIC_POMFILE);
+			assertNotNull(pom);
+			assertTrue(pom.exists());
+			/*
+			 * test
+			 */
+			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
+			assertNotNull(grammarTestMojo);
+			grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+			grammarTestMojo.setFileEncoding("UTF-8");
+			grammarTestMojo.execute();
+		
+		
+		} catch (final Exception e) {
+			e.printStackTrace();
+			Assert.fail("Unexpected exception " + e);
+		}
+	}
+
+	/**
+	 * Test scenario based configuration
+	 */
+	public void testScenarioConfiguration() throws Exception {
+		try {
+			/*
+			 * pom
+			 */
+			System.out.println("Testing '" + SCENARIO_POMFILE + "'");
+			final File pom = getTestFile(SCENARIO_POMFILE);
+			assertNotNull(pom);
+			assertTrue(pom.exists());
+			/*
+			 * test
+			 */
+			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
+			assertNotNull(grammarTestMojo);
+			List<Scenario> scenarios = grammarTestMojo.getScenarios();
+			assertEquals(5, scenarios.size());
+			HashMap<String, Scenario> scenarioMap = new HashMap<>();
+			for (Scenario scenario : scenarios) {
+				scenario.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+				scenario.setFileEncoding("UTF-8");
+				scenarioMap.put(scenario.getScenarioName(), scenario);
+			}
+			assertEquals("dummy.TestGrammarInitializer", scenarioMap.get(PACKAGE_INIT).getGrammarInitializer());
+			grammarTestMojo.execute();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
+	}
 }
