@@ -30,13 +30,14 @@ Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
 		<packageName></packageName>
 		<testFileExtension>.txt</testFileExtension>
 		<exampleFiles>src/test/resources/examples</exampleFiles>
+		<grammarInitializer>com.my.package.MyGrammarInitializer</grammarInitializer>
 	</configuration>
 </plugin>
 ```
 
 ## Parameters
 
-### GrammarName
+### grammarName
 
 Required name of the grammar.  This should match the name of the grammar defined in the grammar ".g4" file.
 
@@ -119,4 +120,116 @@ Optional file encoding. The default value if UTF-8.
 
 ```xml
 <fileEncoding>Shift_JIS</fileEncoding>
+```
+
+### grammarInitializer
+
+Optional full qualified name of a Java class that implements com.khubla.antlr.antlr4test.GrammarInitializer interface.
+
+```xml
+<grammarInitializer>com.my.package.MyGrammarInitializer</grammarInitializer>
+```
+
+When used, allows the Lexer and/or Parser to be initialized **before** grammar test starts.
+This option is typically used when your grammar uses **superClass** antlr4 option to override/extend default Lexer and/or Parser behavior and need to be initialized somehow before use.
+
+One instance will be created with default constructor for each file being parsed and initialize method will be called with the Lexer and Parser instances that will be used in the tests.
+The class that implements GrammarInitializer should implement the following signature.
+
+```java
+public void initialize(Lexer lexer, Parser parser)
+```
+
+## Multiple Test Scenarios
+
+A new optional configuration style was created to allow multiple test scenarios for the grammar.
+A test scenario is a set of configuration parameters used to test a particular scenario.
+The same configuration parameters used in traditional style can be used within test scenarios.
+
+Its particularly useful for grammars that allows multiple configuration options through the use of **superClass** antlr4 option.
+Test scenarios will probably be used in conjunction with grammarInitializer parameter, allowing tests for distinct sets of grammar options.
+All configuration parameters are allowed within a test scenario. Here is an example of this new configuration style.
+
+```xml
+<plugin>
+	<groupId>org.antlr</groupId>
+	<artifactId>antlr4test-maven-plugin</artifactId>
+	<configuration>
+		<scenarios>
+			<scenario>
+				<scenarioName>Package-Without-Initialization</scenarioName>
+				<verbose>false</verbose>
+				<showTree>true</showTree>
+				<entryPoint>attrib_list</entryPoint>
+				<grammarName>TestGrammar</grammarName>
+				<packageName>dummy</packageName>
+				<testFileExtension>.txt</testFileExtension>
+				<exampleFiles>src/test/resources/noInitializationScenario/</exampleFiles>
+			</scenario>
+			<scenario>
+				<scenarioName>Package-Initialize-IgnoreSpaces</scenarioName>
+				<verbose>true</verbose>
+				<showTree>true</showTree>
+				<entryPoint>attrib_list</entryPoint>
+				<grammarName>TestGrammar</grammarName>
+				<packageName>dummy</packageName>
+				<testFileExtension>.txt</testFileExtension>
+				<exampleFiles>src/test/resources/initializeIgnoreSpacesScenario/</exampleFiles>
+				<grammarInitializer>dummy.TestGrammarInitializer</grammarInitializer>
+			</scenario>
+		</scenarios>
+	</configuration>
+</plugin>
+```
+
+In the example we can see a first test scenario where no initialization is made and another test scenario where a "Ignore Space" grammar option is initialized before tests takes place.
+You can point to distinct example files directory in each test scenario. You can even use distinct grammars in each scenario.
+One should not assume any particular order of execution for each scenario.
+
+### Mixing Configuration Styles
+
+You can mix traditional configuration style with test scenario style.
+In this case, the set of parameters created within traditional configuration style scope will be created within a "Default Scenario" scenario.
+
+The following two configurations are completely equivalent.
+
+- Traditional Configuration Style
+
+```xml
+<plugin>
+	<groupId>org.antlr</groupId>
+	<artifactId>antlr4test-maven-plugin</artifactId>
+	<configuration>
+		<verbose>true</verbose>
+		<showTree>true</showTree>
+		<entryPoint>equation</entryPoint>
+		<grammarName>tnt</grammarName>
+		<testFileExtension>.txt</testFileExtension>
+		<exampleFiles>src/test/resources/examples</exampleFiles>
+		<grammarInitializer>com.my.package.MyGrammarInitializer</grammarInitializer>
+	</configuration>
+</plugin>
+```
+
+- Test Scenario Configuration Style
+
+```xml
+<plugin>
+	<groupId>org.antlr</groupId>
+	<artifactId>antlr4test-maven-plugin</artifactId>
+	<configuration>
+		<scenarios>
+			<scenario>
+				<scenarioName>Default Scenario</scenarioName>
+				<verbose>true</verbose>
+				<showTree>true</showTree>
+				<entryPoint>equation</entryPoint>
+				<grammarName>tnt</grammarName>
+				<testFileExtension>.txt</testFileExtension>
+				<exampleFiles>src/test/resources/examples</exampleFiles>
+				<grammarInitializer>com.my.package.MyGrammarInitializer</grammarInitializer>
+			</scenario>
+		</scenarios>
+	</configuration>
+</plugin>
 ```
