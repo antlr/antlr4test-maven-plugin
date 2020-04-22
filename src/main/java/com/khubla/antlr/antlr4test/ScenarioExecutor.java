@@ -53,9 +53,11 @@ public class ScenarioExecutor {
 
 	private Scenario scenario = null;
 	private Log log = null;
+	private GrammarTestMojo mojo = null;
 	private HashMap<URL, ClassLoader> classLoaderMap = new HashMap<>();
 
-	public ScenarioExecutor(Scenario scenario, Log log) {
+	public ScenarioExecutor(GrammarTestMojo mojo, Scenario scenario, Log log) {
+		this.mojo = mojo;
 		this.scenario = scenario;
 		this.log = log;
 	}
@@ -109,10 +111,10 @@ public class ScenarioExecutor {
 		 * classloader
 		 */
 		// create grammarClassLoader as child of current thread's context classloader
-		final ClassLoader grammarClassLoader = getClassLoader(scenario, "/target/classes");
+		final ClassLoader grammarClassLoader = getClassLoader(mojo.getOutputDirectory());
 		// testClassLoader should be grammarClassLoader's child so test classes can find
 		// grammar classes
-		final ClassLoader testClassLoader = getClassLoader(scenario, "/target/test-classes", grammarClassLoader);
+		final ClassLoader testClassLoader = getClassLoader(mojo.getTestOutputDirectory(), grammarClassLoader);
 		/*
 		 * get the classes we need
 		 */
@@ -220,9 +222,9 @@ public class ScenarioExecutor {
 	/**
 	 * build a classloader that can find the files we need
 	 */
-	private ClassLoader getClassLoader(Scenario scenario, String relativePath, ClassLoader parent)
+	private ClassLoader getClassLoader(String path, ClassLoader parent)
 			throws MalformedURLException, ClassNotFoundException {
-		final URL antlrGeneratedURL = new File(scenario.getBaseDir(), relativePath).toURI().toURL();
+		final URL antlrGeneratedURL = new File(path).toURI().toURL();
 		// check if classloader for this URL was already created.
 		ClassLoader ret = classLoaderMap.get(antlrGeneratedURL);
 		if (ret == null) {
@@ -234,9 +236,9 @@ public class ScenarioExecutor {
 		return ret;
 	}
 
-	private ClassLoader getClassLoader(Scenario scenario, String relativePath)
+	private ClassLoader getClassLoader(String path)
 			throws MalformedURLException, ClassNotFoundException {
 		// create a classloader child of Thread.currentThread().getContextClassLoader().
-		return getClassLoader(scenario, relativePath, Thread.currentThread().getContextClassLoader());
+		return getClassLoader(path, Thread.currentThread().getContextClassLoader());
 	}
 }

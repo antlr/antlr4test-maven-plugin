@@ -122,6 +122,14 @@ public class GrammarTestMojo extends AbstractMojo {
 	@Parameter
 	private List<Scenario> scenarios = null;
 
+	/* read outputDirectory from pom project.build.outputDirectory */
+	@Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
+	private String outputDirectory = "/target/classes";
+
+	/* read testOutputDirectory from pom project.build.testOutputDirectory */
+	@Parameter(defaultValue = "${project.build.testOutputDirectory}", readonly = true)
+	private String testOutputDirectory = "/target/test-classes";
+
 	/**
 	 * ctor
 	 * 
@@ -268,6 +276,30 @@ public class GrammarTestMojo extends AbstractMojo {
 		this.scenarios = scenarios;
 	}
 
+	public String getGrammarInitializer() {
+		return grammarInitializer;
+	}
+
+	public void setGrammarInitializer(String grammarInitializer) {
+		this.grammarInitializer = grammarInitializer;
+	}
+
+	public String getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	public void setOutputDirectory(String outputDirectory) {
+		this.outputDirectory = outputDirectory;
+	}
+
+	public String getTestOutputDirectory() {
+		return testOutputDirectory;
+	}
+
+	public void setTestOutputDirectory(String testOutputDirectory) {
+		this.testOutputDirectory = testOutputDirectory;
+	}
+
 	private void testScenarios() throws Exception {
 		Log mojoLogger = getLog();
 		// check if baseDir has been set with some value.
@@ -310,7 +342,7 @@ public class GrammarTestMojo extends AbstractMojo {
 				}
 			}
 			if (scenario.isEnabled()) {
-				ScenarioExecutor executor = new ScenarioExecutor(scenario, mojoLogger);
+				ScenarioExecutor executor = new ScenarioExecutor(this, scenario, mojoLogger);
 				executor.testGrammars();
 				executor = null;
 			} else {
