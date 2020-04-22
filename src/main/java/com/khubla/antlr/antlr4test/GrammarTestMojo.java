@@ -27,20 +27,19 @@
  */
 package com.khubla.antlr.antlr4test;
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.net.*;
-import java.nio.charset.*;
-import java.util.*;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
-import org.apache.maven.plugin.*;
-import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.bitbucket.cowwoc.diffmatchpatch.*;
-import org.codehaus.plexus.util.*;
 
 /**
  * @author Tom Everett
@@ -89,7 +88,7 @@ public class GrammarTestMojo extends AbstractMojo {
 	 * example files
 	 */
 	@Parameter(defaultValue = "/src/test/resources/examples")
-	private String exampleFiles;
+	private String exampleFiles = "/src/test/resources/examples";
 	/**
 	 * packageName
 	 */
@@ -108,7 +107,7 @@ public class GrammarTestMojo extends AbstractMojo {
 	 * file encoding
 	 */
 	@Parameter(defaultValue = "UTF-8")
-	private String fileEncoding;
+	private String fileEncoding = "UTF-8";
 
 	/**
 	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before
@@ -270,14 +269,35 @@ public class GrammarTestMojo extends AbstractMojo {
 	}
 
 	private void testScenarios() throws Exception {
+		Log mojoLogger = getLog();
+		// check if baseDir has been set with some value.
+		// fix for issue #21
+		if (baseDir == null) {
+			// If not, set to the current directory
+			baseDir = new File(".");
+		}
 		for (Scenario scenario : scenarios) {
 			/*
 			 * drop message
 			 */
-			System.out.println("Evaluating Scenario: " + scenario.getScenarioName());
+			mojoLogger.info("Evaluating Scenario: " + scenario.getScenarioName());
+			// fix for issue #21
+			if (scenario.getBaseDir() == null) {
+				// The base dir does not get its default value
+				// in Scenario class under certain unknown conditions
+				// if it is the case, inject the default value from Mojo
+				scenario.setBaseDir(baseDir);
+			}
+			// fix for issue #21
+			if (scenario.getExampleFiles() == null) {
+				// The examples dir does not get its default value
+				// in Scenario class under certain unknown conditions
+				// if it is the case, inject the default value from Mojo
+				scenario.setExampleFiles(exampleFiles);
+			}
 			if (scenario.isVerbose()) {
-				System.out.println("baseDir: " + scenario.getBaseDir());
-				System.out.println("exampleFiles: " + scenario.getExampleFiles());
+				mojoLogger.info("baseDir: " + scenario.getBaseDir());
+				mojoLogger.info("exampleFiles: " + scenario.getExampleFiles());
 				// only check errors if scenario is enabled
 				// so other scenarios are not prevented of being executed.
 				if (scenario.isEnabled()) {
@@ -290,11 +310,11 @@ public class GrammarTestMojo extends AbstractMojo {
 				}
 			}
 			if (scenario.isEnabled()) {
-				ScenarioExecutor executor = new ScenarioExecutor(scenario);
+				ScenarioExecutor executor = new ScenarioExecutor(scenario, mojoLogger);
 				executor.testGrammars();
 				executor = null;
 			} else {
-				System.out.println("Scenario " + scenario.getScenarioName() + " is disabled. Skipping.");
+				mojoLogger.warn("Scenario " + scenario.getScenarioName() + " is disabled. Skipping.");
 			}
 		}
 	}
