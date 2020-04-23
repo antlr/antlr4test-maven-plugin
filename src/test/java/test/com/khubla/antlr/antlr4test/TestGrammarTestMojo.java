@@ -185,8 +185,7 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 			grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
 			grammarTestMojo.setFileEncoding("UTF-8");
 			grammarTestMojo.execute();
-		
-		
+
 		} catch (final Exception e) {
 			e.printStackTrace();
 			Assert.fail("Unexpected exception " + e);
@@ -214,7 +213,9 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 			assertEquals(5, scenarios.size());
 			HashMap<String, Scenario> scenarioMap = new HashMap<>();
 			for (Scenario scenario : scenarios) {
-				scenario.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+// commented to simulate conditions described in issue #21 to replicate the issue
+// https://github.com/antlr/antlr4test-maven-plugin/issues/21
+//				scenario.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
 				scenario.setFileEncoding("UTF-8");
 				scenarioMap.put(scenario.getScenarioName(), scenario);
 			}

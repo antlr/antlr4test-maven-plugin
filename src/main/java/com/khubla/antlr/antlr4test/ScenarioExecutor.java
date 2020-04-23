@@ -30,7 +30,11 @@ package com.khubla.antlr.antlr4test;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
 
 import org.antlr.v4.runtime.CharStream;
@@ -41,15 +45,21 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.Trees;
+import org.apache.maven.plugin.logging.Log;
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 import org.codehaus.plexus.util.FileUtils;
 
 public class ScenarioExecutor {
 
 	private Scenario scenario = null;
+	private Log log = null;
+	private GrammarTestMojo mojo = null;
+	private HashMap<URL, ClassLoader> classLoaderMap = new HashMap<>();
 
-	public ScenarioExecutor(Scenario scenario) {
+	public ScenarioExecutor(GrammarTestMojo mojo, Scenario scenario, Log log) {
+		this.mojo = mojo;
 		this.scenario = scenario;
+		this.log = log;
 	}
 
 	public void testGrammars() throws Exception {
@@ -94,29 +104,34 @@ public class ScenarioExecutor {
 		final String lexerClassName = nn + "Lexer";
 		final String parserClassName = nn + "Parser";
 		if (scenario.isVerbose()) {
-			System.out.println("Lexer classname is: " + lexerClassName);
-			System.out.println("Parser classname is: " + parserClassName);
+			log.info("Lexer classname is: " + lexerClassName);
+			log.info("Parser classname is: " + parserClassName);
 		}
 		/*
 		 * classloader
 		 */
-		final ClassLoader classLoader = scenario.getClassLoader();
+		// create grammarClassLoader as child of current thread's context classloader
+		final ClassLoader grammarClassLoader = getClassLoader(mojo.getOutputDirectory());
+		// testClassLoader should be grammarClassLoader's child so test classes can find
+		// grammar classes
+		final ClassLoader testClassLoader = getClassLoader(mojo.getTestOutputDirectory(), grammarClassLoader);
 		/*
 		 * get the classes we need
 		 */
-		final Class<? extends Lexer> lexerClass = classLoader.loadClass(lexerClassName).asSubclass(Lexer.class);
-		final Class<? extends Parser> parserClass = classLoader.loadClass(parserClassName).asSubclass(Parser.class);
+		final Class<? extends Lexer> lexerClass = grammarClassLoader.loadClass(lexerClassName).asSubclass(Lexer.class);
+		final Class<? extends Parser> parserClass = grammarClassLoader.loadClass(parserClassName)
+				.asSubclass(Parser.class);
 		Class<? extends GrammarInitializer> initializerClass = null;
 		String grammarInitializer = scenario.getGrammarInitializer();
 		if (grammarInitializer != null && !"".equals(grammarInitializer)) {
-			initializerClass = classLoader.loadClass(grammarInitializer).asSubclass(GrammarInitializer.class);
+			initializerClass = testClassLoader.loadClass(grammarInitializer).asSubclass(GrammarInitializer.class);
 		}
 		/*
 		 * get ctors
 		 */
 		final Constructor<?> lexerConstructor = lexerClass.getConstructor(CharStream.class);
 		final Constructor<?> parserConstructor = parserClass.getConstructor(TokenStream.class);
-		System.out.println("Parsing :" + grammarFile.getAbsolutePath());
+		log.info("Parsing :" + grammarFile.getAbsolutePath());
 		CharStream antlrFileStream;
 		if (scenario.getCaseInsensitiveType() == CaseInsensitiveType.None) {
 			antlrFileStream = CharStreams.fromPath(grammarFile.toPath(), Charset.forName(scenario.getFileEncoding()));
@@ -144,7 +159,7 @@ public class ScenarioExecutor {
 		 * initializer lexer and parser
 		 */
 		if (initializerClass != null) {
-			System.out.println(initializerClass.getName());
+			log.info(initializerClass.getName());
 			GrammarInitializer initializer = (GrammarInitializer) initializerClass.newInstance();
 			initializer.initialize(lexer, parser);
 		}
@@ -154,8 +169,9 @@ public class ScenarioExecutor {
 		 */
 		if (scenario.isVerbose()) {
 			tokens.fill();
+			log.info("Token List: ");
 			for (final Object tok : tokens.getTokens()) {
-				System.out.println(tok);
+				log.info(tok.toString());
 			}
 		}
 
@@ -168,7 +184,8 @@ public class ScenarioExecutor {
 		 */
 		if (scenario.isShowTree()) {
 			final String lispTree = Trees.toStringTree(parserRuleContext, parser);
-			System.out.println(lispTree);
+			log.info("Parsed Tree: ");
+			log.info(lispTree);
 		}
 		/*
 		 * check syntax
@@ -188,8 +205,7 @@ public class ScenarioExecutor {
 						}
 						throw new Exception(sb.toString());
 					} else {
-						System.out.println(
-								"Parse tree for '" + grammarFile.getName() + "' matches '" + treeFile.getName() + "'");
+						log.info("Parse tree for '" + grammarFile.getName() + "' matches '" + treeFile.getName() + "'");
 					}
 				}
 			}
@@ -203,4 +219,26 @@ public class ScenarioExecutor {
 		antlrFileStream = null;
 	}
 
+	/**
+	 * build a classloader that can find the files we need
+	 */
+	private ClassLoader getClassLoader(String path, ClassLoader parent)
+			throws MalformedURLException, ClassNotFoundException {
+		final URL antlrGeneratedURL = new File(path).toURI().toURL();
+		// check if classloader for this URL was already created.
+		ClassLoader ret = classLoaderMap.get(antlrGeneratedURL);
+		if (ret == null) {
+			// if not, create a new one and cache it to avoid recreating.
+			final URL[] urls = new URL[] { antlrGeneratedURL };
+			ret = new URLClassLoader(urls, parent);
+			classLoaderMap.put(antlrGeneratedURL, ret);
+		}
+		return ret;
+	}
+
+	private ClassLoader getClassLoader(String path)
+			throws MalformedURLException, ClassNotFoundException {
+		// create a classloader child of Thread.currentThread().getContextClassLoader().
+		return getClassLoader(path, Thread.currentThread().getContextClassLoader());
+	}
 }

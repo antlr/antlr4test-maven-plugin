@@ -80,7 +80,7 @@ public class Scenario {
 	 * example files
 	 */
 	@Parameter(defaultValue = "/src/test/resources/examples")
-	private String exampleFiles;
+	private String exampleFiles = "/src/test/resources/examples";
 	/**
 	 * packageName
 	 */
@@ -95,10 +95,11 @@ public class Scenario {
 	 * file encoding
 	 */
 	@Parameter(defaultValue = "UTF-8")
-	private String fileEncoding;
+	private String fileEncoding = "UTF-8";
 
 	/**
-	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before test starts
+	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before
+	 * test starts
 	 */
 	@Parameter
 	private String grammarInitializer = null;
@@ -110,7 +111,7 @@ public class Scenario {
 	public void setScenarioName(String scenarioName) {
 		this.scenarioName = scenarioName;
 	}
-	
+
 	public String getGrammarName() {
 		return grammarName;
 	}
@@ -126,7 +127,7 @@ public class Scenario {
 	public void setCaseInsensitiveType(CaseInsensitiveType caseInsensitiveType) {
 		this.caseInsensitiveType = caseInsensitiveType;
 	}
-	
+
 	public String getEntryPoint() {
 		return entryPoint;
 	}
@@ -206,22 +207,14 @@ public class Scenario {
 	public void setGrammarInitializer(String grammarInitializer) {
 		this.grammarInitializer = grammarInitializer;
 	}
-	
+
 	/**
 	 * Returns the File pointing to the directory where example files can be found.
+	 * 
 	 * @return
 	 */
 	public File getExampleFilesDir() {
 		return new File(getBaseDir() + "/" + getExampleFiles());
 	}
-	
-	/**
-	 * get a classloader that can find the files we need
-	 */
-	public ClassLoader getClassLoader() throws MalformedURLException, ClassNotFoundException {
-		final URL antlrGeneratedURL = new File(baseDir + "/target/classes").toURI().toURL();
-		final URL[] urls = new URL[] { antlrGeneratedURL };
-		return new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
-	}
-	
+
 }
