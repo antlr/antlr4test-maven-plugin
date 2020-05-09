@@ -40,6 +40,7 @@
 	<properties>
 		<maven.version>3.6.0</maven.version>
 		<antlr.version>4.8-1</antlr.version>
+		<org.easymock.version>3.6</org.easymock.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -110,6 +111,12 @@
 			<groupId>org.bitbucket.cowwoc</groupId>
 			<artifactId>diff-match-patch</artifactId>
 			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>${org.easymock.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

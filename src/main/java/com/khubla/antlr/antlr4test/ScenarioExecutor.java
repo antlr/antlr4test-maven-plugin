@@ -142,7 +142,7 @@ public class ScenarioExecutor {
 		/*
 		 * build lexer
 		 */
-		final AssertErrorsErrorListener assertErrorsErrorListener = new AssertErrorsErrorListener();
+		final AssertErrorsErrorListener assertErrorsErrorListener = new AssertErrorsErrorListener(this.scenario, this.log);
 		Lexer lexer = (Lexer) lexerConstructor.newInstance(antlrFileStream);
 		lexer.addErrorListener(assertErrorsErrorListener);
 		/*

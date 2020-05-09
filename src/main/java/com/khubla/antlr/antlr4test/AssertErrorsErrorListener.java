@@ -36,6 +36,7 @@ import java.util.List;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
+import org.apache.maven.plugin.logging.Log;
 
 public class AssertErrorsErrorListener extends BaseErrorListener {
    protected static final String CHAR_CR_PLACEHOLDER_REGEXP = "\\\\r"; // to match \r
@@ -48,10 +49,21 @@ public class AssertErrorsErrorListener extends BaseErrorListener {
    protected static final String LITERAL_BACKSLASH_N = "\\\\n";
    protected List<String> errorMessages = new ArrayList<>();
 
+   private Scenario scenario = null;
+   private Log log = null;
+
+   public AssertErrorsErrorListener(Scenario scenario, Log log) {
+       this.scenario = scenario;
+       this.log = log;
+   }
+
    public void assertErrors(File errorMessagesFile, String encoding) throws AssertErrorsException {
       if (!errorMessages.isEmpty()) {
          List<String> expectedErrorMessages = null;
-         String errorMessageFileName = errorMessagesFile.getName();
+         String errorMessageFileName = null;
+         if (errorMessagesFile != null ) {
+             errorMessageFileName = errorMessagesFile.getName();
+         }
          try {
             expectedErrorMessages = FileUtil.getNonEmptyLines(errorMessagesFile, encoding);
          } catch (final FileNotFoundException ex) {
@@ -61,7 +73,7 @@ public class AssertErrorsErrorListener extends BaseErrorListener {
          }
          asserts(expectedErrorMessages, errorMessageFileName);
       } else {
-         if (errorMessagesFile.exists()) {
+         if (errorMessagesFile != null && errorMessagesFile.exists()) {
             throw new AssertErrorsException(String.format("no errors found, but errors file exists %s", errorMessagesFile.getAbsolutePath()));
          }
       }
@@ -106,6 +118,9 @@ public class AssertErrorsErrorListener extends BaseErrorListener {
    @Override
    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
       final String errorMessage = String.format("line %d:%d %s", line, charPositionInLine, msg);
+      if (this.scenario.isVerbose()) {
+          log.warn(errorMessage);
+      }
       errorMessages.add(errorMessage);
    }
 }
