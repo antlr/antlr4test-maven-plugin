@@ -12,7 +12,7 @@ Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
 ```xml
 <groupId>com.khubla.antlr</groupId>
 <artifactId>antlr4test-maven-plugin</artifactId>
-<version>1.11</version>
+<version>1.14</version>
 <packaging>jar</packaging>
 ```
 
@@ -233,3 +233,47 @@ The following two configurations are completely equivalent.
 	</configuration>
 </plugin>
 ```
+
+## Checking parsed tree
+
+Sometimes you want to assure that a given input file generates an specific parsed tree. To do so, you can create sibling files to the parsed examples provided adding the .tree extension to the full name of the parsed file to ask the plugin to check if the parsed tree obtained from the file matchs an expected tree. 
+
+For example, if you have an 'examples/fileToBeParsed.txt' file, you can create a 'examples/fileToBeParsed.txt.tree' file containing the LISP style tree expected to be parsed from you file.
+
+The checking is done by taking the parsed tree and transforming it to LISP style tree with toStringTree(parserRuleContext, parser) of class org.antlr.v4.runtime.tree.Trees. If they match, everything is fine. If don't, a Diff is generated to show where differences was found.
+
+Here is the code snippet that checks the parsed tree against the expected one:
+
+```java
+		final File treeFile = new File(grammarFile.getAbsolutePath() + GrammarTestMojo.TREE_SUFFIX);
+		if (treeFile.exists()) {
+			final String lispTree = Trees.toStringTree(parserRuleContext, parser);
+			if (null != lispTree) {
+				final String treeFileData = FileUtils.fileRead(treeFile, scenario.getFileEncoding());
+				if (null != treeFileData) {
+					if (0 != treeFileData.compareTo(lispTree)) {
+						StringBuilder sb = new StringBuilder(
+								"Parse tree does not match '" + treeFile.getName() + "'. Differences: ");
+						for (DiffMatchPatch.Diff diff : new DiffMatchPatch().diffMain(treeFileData, lispTree)) {
+							sb.append(diff.toString());
+							sb.append(", ");
+						}
+						throw new Exception(sb.toString());
+					} else {
+						log.info("Parse tree for '" + grammarFile.getName() + "' matches '" + treeFile.getName() + "'");
+					}
+				}
+			}
+		}
+```
+
+A tip to use this feature is to configure the plugin to shows the parsed tree using **<showTree>true</showTree>** option. Then you can check the log output manually to see if the generated tree is the expected one. If it is ok, you can copy/paste the parsed tree (only the parsed tree with no other message accessories) to the .tree file.
+
+## Checking expected errors
+
+Sometimes you want to check if specific input files generate parsing errors. This can be done with the plugin by adding a new file sibling to the parsed one with .errors extension. Each line is interpreted as an expected parsing error, and the message in the file is compared to the parsed results. If they match, everything is ok, otherwise a test error is raised.
+
+For example, if you have an 'examples/fileToBeParsed.txt' file, you can create a 'examples/fileToBeParsed.txt.errors' file containing the expected parse error messages.
+
+A tip to use this feature is to configure the plugin to shows the errors using **<verbose>true</verbose>** option. Then you can check the log output manually to see exact error message generated and copy/paste the error messages (only the parsed tree with no other message accessories) to the .errors file.
+
