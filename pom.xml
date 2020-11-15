@@ -41,6 +41,7 @@
 		<maven.version>3.6.0</maven.version>
 		<antlr.version>4.8-1</antlr.version>
 		<org.easymock.version>4.2</org.easymock.version>
+		<target.jvm>11</target.jvm>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -125,8 +126,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>${target.jvm}</source>
+					<target>${target.jvm}</target>
 				</configuration>
 			</plugin>
 			<plugin>
