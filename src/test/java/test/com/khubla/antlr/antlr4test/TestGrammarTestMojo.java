@@ -27,17 +27,14 @@
  */
 package test.com.khubla.antlr.antlr4test;
 
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.apache.maven.plugin.testing.*;
+import org.junit.*;
 
-import com.khubla.antlr.antlr4test.GrammarTestMojo;
-import com.khubla.antlr.antlr4test.Scenario;
-
-import org.junit.Assert;
+import com.khubla.antlr.antlr4test.*;
 
 /**
  * @author Tom Everett
@@ -51,15 +48,14 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 	private static final String CASEINSENSITIVE_UPPER_POMFILE = "src/test/resources/caseInsensitive_UPPER-pom.xml";
 	private static final String GRAMMAR_INIT_POMFILE = "src/test/resources/grammarInitializer-pom.xml";
 	private static final String SCENARIO_POMFILE = "src/test/resources/scenarios-pom.xml";
-
+	private static final String BINARY_POMFILE = "src/test/resources/binary-pom.xml";
 	/**
 	 * Scenario Names
 	 */
-
-	private static final String GENERIC_POM = "generic-pom";
-	private static final String CASE_UPPER = "CaseInsensitive_UPPER";
-	private static final String CASE_LOWER = "CaseInsensitive_lower";
-	private static final String PACKAGE_NO_INIT = "Package-Without-Initialization";
+	// private static final String GENERIC_POM = "generic-pom";
+	// private static final String CASE_UPPER = "CaseInsensitive_UPPER";
+	// private static final String CASE_LOWER = "CaseInsensitive_lower";
+	// private static final String PACKAGE_NO_INIT = "Package-Without-Initialization";
 	private static final String PACKAGE_INIT = "Package-Initialize-IgnoreSpaces";
 	/**
 	 * goal
@@ -86,17 +82,24 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 	}
 
 	/**
-	 * Basic test of case insensitive execution
+	 * Basic test of binary
 	 */
-	public void testCaseInsensitiveLowerExecution() throws Exception {
-		testCaseInsensitiveExecution(CASEINSENSITIVE_lower_POMFILE);
-	}
-
-	/**
-	 * Basic test of case insensitive execution
-	 */
-	public void testCaseInsensitiveUpperExecution() throws Exception {
-		testCaseInsensitiveExecution(CASEINSENSITIVE_UPPER_POMFILE);
+	public void testBinary() throws Exception {
+		try {
+			System.out.println("Testing '" + BINARY_POMFILE + "'");
+			final File pom = getTestFile(BINARY_POMFILE);
+			assertNotNull(pom);
+			assertTrue(pom.exists());
+			/*
+			 * test
+			 */
+			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
+			assertNotNull(grammarTestMojo);
+			assertTrue(grammarTestMojo.getBinary());
+		} catch (final Exception e) {
+			e.printStackTrace();
+			Assert.fail("Unexpected exception " + e);
+		}
 	}
 
 	private void testCaseInsensitiveExecution(String caseInsensitivePomXml) {
@@ -120,6 +123,20 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 			e.printStackTrace();
 			Assert.fail();
 		}
+	}
+
+	/**
+	 * Basic test of case insensitive execution
+	 */
+	public void testCaseInsensitiveLowerExecution() throws Exception {
+		testCaseInsensitiveExecution(CASEINSENSITIVE_lower_POMFILE);
+	}
+
+	/**
+	 * Basic test of case insensitive execution
+	 */
+	public void testCaseInsensitiveUpperExecution() throws Exception {
+		testCaseInsensitiveExecution(CASEINSENSITIVE_UPPER_POMFILE);
 	}
 
 	/**
@@ -151,6 +168,29 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 	/**
 	 * Basic test of instantiation
 	 */
+	public void testGrammarInitializer() throws Exception {
+		try {
+			System.out.println("Testing '" + GRAMMAR_INIT_POMFILE + "'");
+			final File pom = getTestFile(GRAMMAR_INIT_POMFILE);
+			assertNotNull(pom);
+			assertTrue(pom.exists());
+			/*
+			 * test
+			 */
+			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
+			assertNotNull(grammarTestMojo);
+			grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+			grammarTestMojo.setFileEncoding("UTF-8");
+			grammarTestMojo.execute();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			Assert.fail("Unexpected exception " + e);
+		}
+	}
+
+	/**
+	 * Basic test of instantiation
+	 */
 	public void testInstatiation() throws Exception {
 		try {
 			final File pom = getTestFile(GENERIC_POMFILE);
@@ -162,30 +202,6 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 			assertTrue(grammarTestMojo.getExampleFiles().compareTo("src/test/resources/examples") == 0);
 			assertTrue(grammarTestMojo.getEntryPoint().compareTo("equation") == 0);
 			assertTrue(grammarTestMojo.getTestFileExtension().compareTo(".txt") == 0);
-		} catch (final Exception e) {
-			e.printStackTrace();
-			Assert.fail("Unexpected exception " + e);
-		}
-	}
-
-	/**
-	 * Basic test of instantiation
-	 */
-	public void testGrammarInitializer() throws Exception {
-		try {
-			System.out.println("Testing '" + GRAMMAR_INIT_POMFILE + "'");
-			final File pom = getTestFile(GENERIC_POMFILE);
-			assertNotNull(pom);
-			assertTrue(pom.exists());
-			/*
-			 * test
-			 */
-			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
-			assertNotNull(grammarTestMojo);
-			grammarTestMojo.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
-			grammarTestMojo.setFileEncoding("UTF-8");
-			grammarTestMojo.execute();
-
 		} catch (final Exception e) {
 			e.printStackTrace();
 			Assert.fail("Unexpected exception " + e);
@@ -209,13 +225,13 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 			 */
 			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
 			assertNotNull(grammarTestMojo);
-			List<Scenario> scenarios = grammarTestMojo.getScenarios();
+			final List<Scenario> scenarios = grammarTestMojo.getScenarios();
 			assertEquals(5, scenarios.size());
-			HashMap<String, Scenario> scenarioMap = new HashMap<>();
-			for (Scenario scenario : scenarios) {
-// commented to simulate conditions described in issue #21 to replicate the issue
-// https://github.com/antlr/antlr4test-maven-plugin/issues/21
-//				scenario.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
+			final HashMap<String, Scenario> scenarioMap = new HashMap<>();
+			for (final Scenario scenario : scenarios) {
+				// commented to simulate conditions described in issue #21 to replicate the issue
+				// https://github.com/antlr/antlr4test-maven-plugin/issues/21
+				// scenario.setBaseDir(new File(getAbsolutePath("../..")).getCanonicalFile());
 				scenario.setFileEncoding("UTF-8");
 				scenarioMap.put(scenario.getScenarioName(), scenario);
 			}

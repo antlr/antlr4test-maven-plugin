@@ -27,16 +27,14 @@
  */
 package dummy;
 
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.*;
 
-import com.khubla.antlr.antlr4test.GrammarInitializer;
+import com.khubla.antlr.antlr4test.*;
 
 public class TestGrammarInitializer implements GrammarInitializer {
-
+	@Override
 	public void initialize(Lexer lexer, Parser parser) {
-		BaseLexer myLexer = (BaseLexer) lexer;
+		final BaseLexer myLexer = (BaseLexer) lexer;
 		myLexer.setMode(BaseLexer.Mode.IgnoreSpace);
 	}
-
 }

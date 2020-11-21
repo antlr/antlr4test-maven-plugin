@@ -36,7 +36,7 @@ import java.util.*;
 public class FileUtil {
 	/**
 	 * find files
-	 * 
+	 *
 	 * @param dir Directory
 	 * @return list of files
 	 * @throws Exception from getAllFiles
@@ -47,7 +47,7 @@ public class FileUtil {
 
 	/**
 	 * find files
-	 * 
+	 *
 	 * @param dir Directory
 	 * @param extension File extension
 	 * @return list of files

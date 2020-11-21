@@ -27,34 +27,26 @@
  */
 package com.khubla.antlr.antlr4test;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
+import java.io.*;
+import java.lang.reflect.*;
+import java.net.*;
+import java.nio.charset.*;
+import java.util.*;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.tree.Trees;
-import org.apache.maven.plugin.logging.Log;
-import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
-import org.codehaus.plexus.util.FileUtils;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
+import org.apache.maven.plugin.logging.*;
+import org.bitbucket.cowwoc.diffmatchpatch.*;
+import org.codehaus.plexus.util.*;
+
+import com.khubla.antlr.antlr4test.charstream.*;
+import com.khubla.antlr.antlr4test.filestream.*;
 
 public class ScenarioExecutor {
-
 	private Scenario scenario = null;
 	private Log log = null;
 	private GrammarTestMojo mojo = null;
-	private HashMap<URL, ClassLoader> classLoaderMap = new HashMap<>();
+	private final HashMap<URL, ClassLoader> classLoaderMap = new HashMap<>();
 
 	public ScenarioExecutor(GrammarTestMojo mojo, Scenario scenario, Log log) {
 		this.mojo = mojo;
@@ -62,32 +54,29 @@ public class ScenarioExecutor {
 		this.log = log;
 	}
 
-	public void testGrammars() throws Exception {
+	private ClassLoader getClassLoader(String path) throws MalformedURLException, ClassNotFoundException {
 		/*
-		 * iterate examples
+		 * create a ClassLoader child of Thread.currentThread().getContextClassLoader().
 		 */
-		final List<File> exampleFiles = FileUtil.getAllFiles(scenario.getExampleFilesDir().getAbsolutePath());
-		if (null != exampleFiles) {
-			for (final File file : exampleFiles) {
-				/*
-				 * test grammar
-				 */
-				if ((!file.getName().endsWith(GrammarTestMojo.ERRORS_SUFFIX))
-						&& (!file.getName().endsWith(GrammarTestMojo.TREE_SUFFIX))) {
-					/*
-					 * file extension
-					 */
-					if ((scenario.getTestFileExtension() == null) || ((scenario.getTestFileExtension() != null)
-							&& (file.getName().endsWith(scenario.getTestFileExtension())))) {
-						testGrammar(scenario, file);
-					}
-				}
-				/*
-				 * gc
-				 */
-				System.gc();
-			}
+		return getClassLoader(path, Thread.currentThread().getContextClassLoader());
+	}
+
+	/**
+	 * build a ClassLoader that can find the files we need
+	 */
+	private ClassLoader getClassLoader(String path, ClassLoader parent) throws MalformedURLException, ClassNotFoundException {
+		final URL antlrGeneratedURL = new File(path).toURI().toURL();
+		/*
+		 * check if ClassLoader for this URL was already created.
+		 */
+		ClassLoader ret = classLoaderMap.get(antlrGeneratedURL);
+		if (ret == null) {
+			// if not, create a new one and cache it to avoid recreating.
+			final URL[] urls = new URL[] { antlrGeneratedURL };
+			ret = new URLClassLoader(urls, parent);
+			classLoaderMap.put(antlrGeneratedURL, ret);
 		}
+		return ret;
 	}
 
 	/**
@@ -98,7 +87,7 @@ public class ScenarioExecutor {
 		 * figure out class names
 		 */
 		String nn = scenario.getGrammarName();
-		if (null != scenario.getPackageName() && !"".equals(scenario.getPackageName())) {
+		if ((null != scenario.getPackageName()) && !"".equals(scenario.getPackageName())) {
 			nn = scenario.getPackageName() + "." + scenario.getGrammarName();
 		}
 		final String lexerClassName = nn + "Lexer";
@@ -108,9 +97,9 @@ public class ScenarioExecutor {
 			log.info("Parser classname is: " + parserClassName);
 		}
 		/*
-		 * classloader
+		 * ClassLoader
 		 */
-		// create grammarClassLoader as child of current thread's context classloader
+		// create grammarClassLoader as child of current thread's context ClassLoader
 		final ClassLoader grammarClassLoader = getClassLoader(mojo.getOutputDirectory());
 		// testClassLoader should be grammarClassLoader's child so test classes can find
 		// grammar classes
@@ -119,11 +108,10 @@ public class ScenarioExecutor {
 		 * get the classes we need
 		 */
 		final Class<? extends Lexer> lexerClass = grammarClassLoader.loadClass(lexerClassName).asSubclass(Lexer.class);
-		final Class<? extends Parser> parserClass = grammarClassLoader.loadClass(parserClassName)
-				.asSubclass(Parser.class);
+		final Class<? extends Parser> parserClass = grammarClassLoader.loadClass(parserClassName).asSubclass(Parser.class);
 		Class<? extends GrammarInitializer> initializerClass = null;
-		String grammarInitializer = scenario.getGrammarInitializer();
-		if (grammarInitializer != null && !"".equals(grammarInitializer)) {
+		final String grammarInitializer = scenario.getGrammarInitializer();
+		if ((grammarInitializer != null) && !"".equals(grammarInitializer)) {
 			initializerClass = testClassLoader.loadClass(grammarInitializer).asSubclass(GrammarInitializer.class);
 		}
 		/*
@@ -132,23 +120,30 @@ public class ScenarioExecutor {
 		final Constructor<?> lexerConstructor = lexerClass.getConstructor(CharStream.class);
 		final Constructor<?> parserConstructor = parserClass.getConstructor(TokenStream.class);
 		log.info("Parsing :" + grammarFile.getAbsolutePath());
-		CharStream antlrFileStream;
+		CharStream antlrCharStream;
+		/*
+		 * case
+		 */
 		if (scenario.getCaseInsensitiveType() == CaseInsensitiveType.None) {
-			antlrFileStream = CharStreams.fromPath(grammarFile.toPath(), Charset.forName(scenario.getFileEncoding()));
+			antlrCharStream = CharStreams.fromPath(grammarFile.toPath(), Charset.forName(scenario.getFileEncoding()));
 		} else {
-			antlrFileStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath(),
-					scenario.getFileEncoding(), scenario.getCaseInsensitiveType());
+			antlrCharStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath(), scenario.getFileEncoding(), scenario.getCaseInsensitiveType());
+		}
+		/*
+		 * binary
+		 */
+		if (true == scenario.getBinary()) {
+			antlrCharStream = new BinaryCharStream(antlrCharStream);
 		}
 		/*
 		 * build lexer
 		 */
-		final AssertErrorsErrorListener assertErrorsErrorListener = new AssertErrorsErrorListener(this.scenario, this.log);
-		Lexer lexer = (Lexer) lexerConstructor.newInstance(antlrFileStream);
+		final AssertErrorsErrorListener assertErrorsErrorListener = new AssertErrorsErrorListener(this.scenario, log);
+		Lexer lexer = (Lexer) lexerConstructor.newInstance(antlrCharStream);
 		lexer.addErrorListener(assertErrorsErrorListener);
 		/*
 		 * build token stream
 		 */
-
 		final CommonTokenStream tokens = new CommonTokenStream(lexer);
 		/*
 		 * build parser
@@ -160,25 +155,23 @@ public class ScenarioExecutor {
 		 */
 		if (initializerClass != null) {
 			log.info(initializerClass.getName());
-			GrammarInitializer initializer = (GrammarInitializer) initializerClass.newInstance();
+			final GrammarInitializer initializer = initializerClass.getDeclaredConstructor().newInstance();
 			initializer.initialize(lexer, parser);
 		}
-
 		/*
 		 * show tokens
 		 */
 		if (scenario.isVerbose()) {
 			tokens.fill();
 			log.info("Token List: ");
-			for (final Object tok : tokens.getTokens()) {
-				log.info(tok.toString());
+			for (final Token tok : tokens.getTokens()) {
+				final String logmessage = tok.toString() + " {" + tokToHex(tok) + "}";
+				log.info(logmessage);
 			}
 		}
-
 		final Method method = parserClass.getMethod(scenario.getEntryPoint());
 		ParserRuleContext parserRuleContext = (ParserRuleContext) method.invoke(parser);
-		assertErrorsErrorListener.assertErrors(new File(grammarFile.getAbsolutePath() + GrammarTestMojo.ERRORS_SUFFIX),
-				scenario.getFileEncoding());
+		assertErrorsErrorListener.assertErrors(new File(grammarFile.getAbsolutePath() + GrammarTestMojo.ERRORS_SUFFIX), scenario.getFileEncoding());
 		/*
 		 * show the tree
 		 */
@@ -197,9 +190,8 @@ public class ScenarioExecutor {
 				final String treeFileData = FileUtils.fileRead(treeFile, scenario.getFileEncoding());
 				if (null != treeFileData) {
 					if (0 != treeFileData.compareTo(lispTree)) {
-						StringBuilder sb = new StringBuilder(
-								"Parse tree does not match '" + treeFile.getName() + "'. Differences: ");
-						for (DiffMatchPatch.Diff diff : new DiffMatchPatch().diffMain(treeFileData, lispTree)) {
+						final StringBuilder sb = new StringBuilder("Parse tree does not match '" + treeFile.getName() + "'. Differences: ");
+						for (final DiffMatchPatch.Diff diff : new DiffMatchPatch().diffMain(treeFileData, lispTree)) {
 							sb.append(diff.toString());
 							sb.append(", ");
 						}
@@ -216,29 +208,54 @@ public class ScenarioExecutor {
 		parser = null;
 		lexer = null;
 		parserRuleContext = null;
-		antlrFileStream = null;
+		antlrCharStream = null;
+	}
+
+	public void testGrammars() throws Exception {
+		/*
+		 * iterate examples
+		 */
+		final List<File> exampleFiles = FileUtil.getAllFiles(scenario.getExampleFilesDir().getAbsolutePath());
+		if (null != exampleFiles) {
+			for (final File file : exampleFiles) {
+				/*
+				 * test grammar
+				 */
+				if ((!file.getName().endsWith(GrammarTestMojo.ERRORS_SUFFIX)) && (!file.getName().endsWith(GrammarTestMojo.TREE_SUFFIX))) {
+					/*
+					 * file extension
+					 */
+					if ((scenario.getTestFileExtension() == null) || ((scenario.getTestFileExtension() != null) && (file.getName().endsWith(scenario.getTestFileExtension())))) {
+						testGrammar(scenario, file);
+					}
+				}
+				/*
+				 * gc
+				 */
+				System.gc();
+			}
+		}
 	}
 
 	/**
-	 * build a classloader that can find the files we need
+	 * return a string of hex bytes for a token
+	 *
+	 * @param token Token
+	 * @return hex bytes
 	 */
-	private ClassLoader getClassLoader(String path, ClassLoader parent)
-			throws MalformedURLException, ClassNotFoundException {
-		final URL antlrGeneratedURL = new File(path).toURI().toURL();
-		// check if classloader for this URL was already created.
-		ClassLoader ret = classLoaderMap.get(antlrGeneratedURL);
-		if (ret == null) {
-			// if not, create a new one and cache it to avoid recreating.
-			final URL[] urls = new URL[] { antlrGeneratedURL };
-			ret = new URLClassLoader(urls, parent);
-			classLoaderMap.put(antlrGeneratedURL, ret);
+	private String tokToHex(Token token) {
+		String ret = "";
+		token.getInputStream().seek(0);
+		boolean first = true;
+		for (int i = token.getStartIndex(); i < (token.getStopIndex() + 1); i++) {
+			if (true == first) {
+				first = false;
+			} else {
+				ret += ",";
+			}
+			final int t = token.getInputStream().LA(i + 1);
+			ret += "0x" + String.format("%02X", (byte) t);
 		}
 		return ret;
-	}
-
-	private ClassLoader getClassLoader(String path)
-			throws MalformedURLException, ClassNotFoundException {
-		// create a classloader child of Thread.currentThread().getContextClassLoader().
-		return getClassLoader(path, Thread.currentThread().getContextClassLoader());
 	}
 }

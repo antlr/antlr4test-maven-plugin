@@ -64,13 +64,20 @@ Required name of the grammar rule to use as the test entry point
 ```xml
 <entryPoint>htmlDocument</entryPoint>
 ```
+### binary
+
+Optionally treat file as binary
+
+```xml
+<binary>true</binary>
+```
 
 ### enabled
 
 Optional boolean enable-disable flag
 
 ```xml
-<enabled>true<\enabled>
+<enabled>true</enabled>
 ```
 
 ### verbose
@@ -115,7 +122,7 @@ Optional file extension of test files
 
 ### fileEncoding
 
-Optional file encoding. The default value if UTF-8.
+Optional file encoding. The default value is UTF-8.
 
 ```xml
 <fileEncoding>Shift_JIS</fileEncoding>

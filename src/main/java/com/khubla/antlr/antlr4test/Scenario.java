@@ -27,12 +27,9 @@
  */
 package com.khubla.antlr.antlr4test;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.io.*;
 
-import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.*;
 
 public class Scenario {
 	/**
@@ -46,7 +43,7 @@ public class Scenario {
 	@Parameter
 	private String grammarName;
 	/**
-	 * grammar Name
+	 * case
 	 */
 	@Parameter
 	private CaseInsensitiveType caseInsensitiveType = CaseInsensitiveType.None;
@@ -60,6 +57,11 @@ public class Scenario {
 	 */
 	@Parameter
 	private boolean enabled = true;
+	/**
+	 * binary
+	 */
+	@Parameter
+	private boolean binary = false;
 	/**
 	 * verbose
 	 */
@@ -75,7 +77,6 @@ public class Scenario {
 	 */
 	@Parameter(defaultValue = ".txt")
 	private String testFileExtension = ".txt";
-
 	/**
 	 * example files
 	 */
@@ -96,125 +97,130 @@ public class Scenario {
 	 */
 	@Parameter(defaultValue = "UTF-8")
 	private String fileEncoding = "UTF-8";
-
 	/**
-	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before
-	 * test starts
+	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before test starts
 	 */
 	@Parameter
 	private String grammarInitializer = null;
 
-	public String getScenarioName() {
-		return scenarioName;
+	public File getBaseDir() {
+		return baseDir;
 	}
 
-	public void setScenarioName(String scenarioName) {
-		this.scenarioName = scenarioName;
-	}
-
-	public String getGrammarName() {
-		return grammarName;
-	}
-
-	public void setGrammarName(String grammarName) {
-		this.grammarName = grammarName;
+	public boolean getBinary() {
+		return binary;
 	}
 
 	public CaseInsensitiveType getCaseInsensitiveType() {
 		return caseInsensitiveType;
 	}
 
-	public void setCaseInsensitiveType(CaseInsensitiveType caseInsensitiveType) {
-		this.caseInsensitiveType = caseInsensitiveType;
-	}
-
 	public String getEntryPoint() {
 		return entryPoint;
-	}
-
-	public void setEntryPoint(String entryPoint) {
-		this.entryPoint = entryPoint;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public boolean isVerbose() {
-		return verbose;
-	}
-
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
-	}
-
-	public boolean isShowTree() {
-		return showTree;
-	}
-
-	public void setShowTree(boolean showTree) {
-		this.showTree = showTree;
-	}
-
-	public String getTestFileExtension() {
-		return testFileExtension;
-	}
-
-	public void setTestFileExtension(String testFileExtension) {
-		this.testFileExtension = testFileExtension;
 	}
 
 	public String getExampleFiles() {
 		return exampleFiles;
 	}
 
-	public void setExampleFiles(String exampleFiles) {
-		this.exampleFiles = exampleFiles;
-	}
-
-	public String getPackageName() {
-		return packageName;
-	}
-
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
-	}
-
-	public File getBaseDir() {
-		return baseDir;
-	}
-
-	public void setBaseDir(File baseDir) {
-		this.baseDir = baseDir;
-	}
-
-	public String getFileEncoding() {
-		return fileEncoding;
-	}
-
-	public void setFileEncoding(String fileEncoding) {
-		this.fileEncoding = fileEncoding;
-	}
-
-	public String getGrammarInitializer() {
-		return grammarInitializer;
-	}
-
-	public void setGrammarInitializer(String grammarInitializer) {
-		this.grammarInitializer = grammarInitializer;
-	}
-
 	/**
 	 * Returns the File pointing to the directory where example files can be found.
-	 * 
+	 *
 	 * @return
 	 */
 	public File getExampleFilesDir() {
 		return new File(getBaseDir() + "/" + getExampleFiles());
 	}
 
+	public String getFileEncoding() {
+		return fileEncoding;
+	}
+
+	public String getGrammarInitializer() {
+		return grammarInitializer;
+	}
+
+	public String getGrammarName() {
+		return grammarName;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public String getScenarioName() {
+		return scenarioName;
+	}
+
+	public String getTestFileExtension() {
+		return testFileExtension;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public boolean isShowTree() {
+		return showTree;
+	}
+
+	public boolean isVerbose() {
+		return verbose;
+	}
+
+	public void setBaseDir(File baseDir) {
+		this.baseDir = baseDir;
+	}
+
+	public void setBinary(boolean binary) {
+		this.binary = binary;
+	}
+
+	public void setCaseInsensitiveType(CaseInsensitiveType caseInsensitiveType) {
+		this.caseInsensitiveType = caseInsensitiveType;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public void setEntryPoint(String entryPoint) {
+		this.entryPoint = entryPoint;
+	}
+
+	public void setExampleFiles(String exampleFiles) {
+		this.exampleFiles = exampleFiles;
+	}
+
+	public void setFileEncoding(String fileEncoding) {
+		this.fileEncoding = fileEncoding;
+	}
+
+	public void setGrammarInitializer(String grammarInitializer) {
+		this.grammarInitializer = grammarInitializer;
+	}
+
+	public void setGrammarName(String grammarName) {
+		this.grammarName = grammarName;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
+
+	public void setScenarioName(String scenarioName) {
+		this.scenarioName = scenarioName;
+	}
+
+	public void setShowTree(boolean showTree) {
+		this.showTree = showTree;
+	}
+
+	public void setTestFileExtension(String testFileExtension) {
+		this.testFileExtension = testFileExtension;
+	}
+
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
 }

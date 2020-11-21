@@ -27,19 +27,14 @@
  */
 package com.khubla.antlr.antlr4test;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugin.*;
+import org.apache.maven.plugin.logging.*;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * @author Tom Everett
@@ -60,10 +55,15 @@ public class GrammarTestMojo extends AbstractMojo {
 	@Parameter
 	private String grammarName;
 	/**
-	 * grammar Name
+	 * case
 	 */
 	@Parameter
 	private CaseInsensitiveType caseInsensitiveType = CaseInsensitiveType.None;
+	/**
+	 * binary
+	 */
+	@Parameter
+	private boolean binary = false;
 	/**
 	 * entry point method on the parser
 	 */
@@ -108,31 +108,30 @@ public class GrammarTestMojo extends AbstractMojo {
 	 */
 	@Parameter(defaultValue = "UTF-8")
 	private String fileEncoding = "UTF-8";
-
 	/**
-	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before
-	 * test starts
+	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before test starts
 	 */
 	@Parameter
 	private String grammarInitializer = null;
-
 	/**
 	 * List of test scenarios to be executed.
 	 */
 	@Parameter
 	private List<Scenario> scenarios = null;
-
-	/* read outputDirectory from pom project.build.outputDirectory */
+	/**
+	 * read outputDirectory from pom project.build.outputDirectory
+	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
 	private String outputDirectory = "/target/classes";
-
-	/* read testOutputDirectory from pom project.build.testOutputDirectory */
+	/**
+	 * read testOutputDirectory from pom project.build.testOutputDirectory
+	 */
 	@Parameter(defaultValue = "${project.build.testOutputDirectory}", readonly = true)
 	private String testOutputDirectory = "/target/test-classes";
 
 	/**
 	 * ctor
-	 * 
+	 *
 	 * @throws MalformedURLException exception for malformed url *eye roll*
 	 */
 	public GrammarTestMojo() throws MalformedURLException {
@@ -141,11 +140,13 @@ public class GrammarTestMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
+			/*
+			 * No scenario configuration has been given. Creates a default one.
+			 */
 			if (scenarios == null) {
-				// No scenario configuration has been given. Creates a default one.
-				this.scenarios = new ArrayList<Scenario>();
+				scenarios = new ArrayList<Scenario>();
 			}
-			if (this.grammarName != null && !"".equals(this.grammarName)) {
+			if ((grammarName != null) && !"".equals(grammarName)) {
 				//
 				// Create default scenario if grammar name is given.
 				// Injects values from plugin configurations.
@@ -154,7 +155,7 @@ public class GrammarTestMojo extends AbstractMojo {
 				// Does not check if plugin configuration is ok to maintain same behavior as
 				// before.
 				//
-				Scenario defaultScenario = new Scenario();
+				final Scenario defaultScenario = new Scenario();
 				defaultScenario.setScenarioName("Default Scenario");
 				defaultScenario.setGrammarName(grammarName);
 				defaultScenario.setCaseInsensitiveType(caseInsensitiveType);
@@ -168,7 +169,8 @@ public class GrammarTestMojo extends AbstractMojo {
 				defaultScenario.setGrammarInitializer(grammarInitializer);
 				defaultScenario.setShowTree(showTree);
 				defaultScenario.setVerbose(verbose);
-				this.scenarios.add(defaultScenario);
+				defaultScenario.setBinary(binary);
+				scenarios.add(defaultScenario);
 			}
 			/*
 			 * test grammars
@@ -184,6 +186,14 @@ public class GrammarTestMojo extends AbstractMojo {
 		return baseDir;
 	}
 
+	public boolean getBinary() {
+		return binary;
+	}
+
+	public CaseInsensitiveType getCaseInsensitiveType() {
+		return caseInsensitiveType;
+	}
+
 	public String getEntryPoint() {
 		return entryPoint;
 	}
@@ -192,20 +202,36 @@ public class GrammarTestMojo extends AbstractMojo {
 		return exampleFiles;
 	}
 
+	public String getFileEncoding() {
+		return fileEncoding;
+	}
+
+	public String getGrammarInitializer() {
+		return grammarInitializer;
+	}
+
 	public String getGrammarName() {
 		return grammarName;
+	}
+
+	public String getOutputDirectory() {
+		return outputDirectory;
 	}
 
 	public String getPackageName() {
 		return packageName;
 	}
 
+	public List<Scenario> getScenarios() {
+		return Collections.unmodifiableList(scenarios);
+	}
+
 	public String getTestFileExtension() {
 		return testFileExtension;
 	}
 
-	public CaseInsensitiveType getCaseInsensitiveType() {
-		return caseInsensitiveType;
+	public String getTestOutputDirectory() {
+		return testOutputDirectory;
 	}
 
 	public boolean isEnabled() {
@@ -220,12 +246,12 @@ public class GrammarTestMojo extends AbstractMojo {
 		return verbose;
 	}
 
-	public String getFileEncoding() {
-		return fileEncoding;
-	}
-
 	public void setBaseDir(File baseDir) {
 		this.baseDir = baseDir;
+	}
+
+	public void setBinary(boolean binary) {
+		this.binary = binary;
 	}
 
 	public void setCaseInsensitiveType(CaseInsensitiveType caseInsensitiveType) {
@@ -244,12 +270,28 @@ public class GrammarTestMojo extends AbstractMojo {
 		this.exampleFiles = exampleFiles;
 	}
 
+	public void setFileEncoding(String fileEncoding) {
+		this.fileEncoding = fileEncoding;
+	}
+
+	public void setGrammarInitializer(String grammarInitializer) {
+		this.grammarInitializer = grammarInitializer;
+	}
+
 	public void setGrammarName(String grammarName) {
 		this.grammarName = grammarName;
 	}
 
+	public void setOutputDirectory(String outputDirectory) {
+		this.outputDirectory = outputDirectory;
+	}
+
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
+	}
+
+	public void setScenarios(List<Scenario> scenarios) {
+		this.scenarios = scenarios;
 	}
 
 	public void setShowTree(boolean showTree) {
@@ -260,55 +302,23 @@ public class GrammarTestMojo extends AbstractMojo {
 		this.testFileExtension = testFileExtension;
 	}
 
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
-	}
-
-	public void setFileEncoding(String fileEncoding) {
-		this.fileEncoding = fileEncoding;
-	}
-
-	public List<Scenario> getScenarios() {
-		return Collections.unmodifiableList(scenarios);
-	}
-
-	public void setScenarios(List<Scenario> scenarios) {
-		this.scenarios = scenarios;
-	}
-
-	public String getGrammarInitializer() {
-		return grammarInitializer;
-	}
-
-	public void setGrammarInitializer(String grammarInitializer) {
-		this.grammarInitializer = grammarInitializer;
-	}
-
-	public String getOutputDirectory() {
-		return outputDirectory;
-	}
-
-	public void setOutputDirectory(String outputDirectory) {
-		this.outputDirectory = outputDirectory;
-	}
-
-	public String getTestOutputDirectory() {
-		return testOutputDirectory;
-	}
-
 	public void setTestOutputDirectory(String testOutputDirectory) {
 		this.testOutputDirectory = testOutputDirectory;
 	}
 
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
+
 	private void testScenarios() throws Exception {
-		Log mojoLogger = getLog();
+		final Log mojoLogger = getLog();
 		// check if baseDir has been set with some value.
 		// fix for issue #21
 		if (baseDir == null) {
 			// If not, set to the current directory
 			baseDir = new File(".");
 		}
-		for (Scenario scenario : scenarios) {
+		for (final Scenario scenario : scenarios) {
 			/*
 			 * drop message
 			 */
@@ -330,6 +340,9 @@ public class GrammarTestMojo extends AbstractMojo {
 			if (scenario.isVerbose()) {
 				mojoLogger.info("baseDir: " + scenario.getBaseDir());
 				mojoLogger.info("exampleFiles: " + scenario.getExampleFiles());
+				mojoLogger.info("binary: " + binary);
+				mojoLogger.info("case: " + caseInsensitiveType);
+				mojoLogger.info("encoding: " + fileEncoding);
 				// only check errors if scenario is enabled
 				// so other scenarios are not prevented of being executed.
 				if (scenario.isEnabled()) {
@@ -350,5 +363,4 @@ public class GrammarTestMojo extends AbstractMojo {
 			}
 		}
 	}
-
 }
