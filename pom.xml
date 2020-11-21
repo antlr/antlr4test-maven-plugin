@@ -304,8 +304,8 @@
 									<goal>jar</goal>
 								</goals>
 								<configuration>
-									<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-									<source>8</source>
+								<!--  	<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+									<source>8</source>-->
 								</configuration>
 							</execution>
 						</executions>

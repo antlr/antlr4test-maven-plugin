@@ -126,7 +126,7 @@ public class Scenario {
 	/**
 	 * Returns the File pointing to the directory where example files can be found.
 	 *
-	 * @return
+	 * @return File
 	 */
 	public File getExampleFilesDir() {
 		return new File(getBaseDir() + "/" + getExampleFiles());
