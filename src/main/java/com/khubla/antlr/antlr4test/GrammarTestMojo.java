@@ -97,6 +97,7 @@ public class GrammarTestMojo extends AbstractMojo {
 	/**
 	 * testFileExtension
 	 */
+	@Parameter
 	private String testFileExtension = null;
 	/**
 	 * basedir dir
