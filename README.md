@@ -11,7 +11,7 @@ Maven Mojo for testing [Antlr4](http://www.antlr.org/) Grammars
 ```xml
 <groupId>com.khubla.antlr</groupId>
 <artifactId>antlr4test-maven-plugin</artifactId>
-<version>1.14</version>
+<version>1.18</version>
 <packaging>jar</packaging>
 ```
 
