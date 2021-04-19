@@ -40,7 +40,7 @@
 	<properties>
 		<maven.version>3.6.0</maven.version>
 		<antlr.version>4.9.2</antlr.version>
-		<org.easymock.version>4.2</org.easymock.version>
+		<org.easymock.version>4.3</org.easymock.version>
 		<target.jvm>11</target.jvm>
 	</properties>
 	<dependencies>
