@@ -37,7 +37,7 @@
 		<url>https://github.com/antlr</url>
 	</organization>
 	<properties>
-		<maven.version>3.6.1</maven.version>
+		<maven.version>3.6.2</maven.version>
 		<antlr.version>4.9.3</antlr.version>
 		<org.easymock.version>4.3</org.easymock.version>
 		<target.jvm>11</target.jvm>
