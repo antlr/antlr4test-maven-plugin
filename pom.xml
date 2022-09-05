@@ -3,7 +3,7 @@
 	<groupId>com.khubla.antlr</groupId>
 	<artifactId>antlr4test-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<version>1.22-SNAPSHOT</version>
+	<version>1.22</version>
 	<name>khubla.com Antlr4 test mojo</name>
 	<description>antlr4test-maven-plugin is a maven mojo for testing Antlr4 grammars</description>
 	<url>https://github.com/antlr/antlr4test-maven-plugin</url>
@@ -38,7 +38,7 @@
 	</organization>
 	<properties>
 		<maven.version>3.6.2</maven.version>
-		<antlr.version>4.10.1</antlr.version>
+		<antlr.version>4.11.1</antlr.version>
 		<org.easymock.version>4.3</org.easymock.version>
 		<target.jvm>11</target.jvm>
 	</properties>
