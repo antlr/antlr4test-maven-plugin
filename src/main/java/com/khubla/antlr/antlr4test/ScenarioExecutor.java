@@ -43,9 +43,9 @@ import com.khubla.antlr.antlr4test.charstream.*;
 import com.khubla.antlr.antlr4test.filestream.*;
 
 public class ScenarioExecutor {
-	private Scenario scenario = null;
-	private Log log = null;
-	private GrammarTestMojo mojo = null;
+	private final Scenario scenario;
+	private final Log log;
+	private final GrammarTestMojo mojo;
 	private final HashMap<URL, ClassLoader> classLoaderMap = new HashMap<>();
 
 	public ScenarioExecutor(GrammarTestMojo mojo, Scenario scenario, Log log) {
@@ -54,7 +54,7 @@ public class ScenarioExecutor {
 		this.log = log;
 	}
 
-	private ClassLoader getClassLoader(String path) throws MalformedURLException, ClassNotFoundException {
+	private ClassLoader getClassLoader(String path) throws MalformedURLException {
 		/*
 		 * create a ClassLoader child of Thread.currentThread().getContextClassLoader().
 		 */
@@ -64,7 +64,7 @@ public class ScenarioExecutor {
 	/**
 	 * build a ClassLoader that can find the files we need
 	 */
-	private ClassLoader getClassLoader(String path, ClassLoader parent) throws MalformedURLException, ClassNotFoundException {
+	private ClassLoader getClassLoader(String path, ClassLoader parent) throws MalformedURLException {
 		final URL antlrGeneratedURL = new File(path).toURI().toURL();
 		/*
 		 * check if ClassLoader for this URL was already created.
@@ -80,9 +80,9 @@ public class ScenarioExecutor {
 	}
 
 	/**
-	 * test a single grammar
+	 * test a single example
 	 */
-	private void testGrammar(Scenario scenario, File grammarFile) throws Exception {
+	private void testExample(Scenario scenario, File exampleFile) throws Exception {
 		/*
 		 * figure out class names
 		 */
@@ -119,20 +119,20 @@ public class ScenarioExecutor {
 		 */
 		final Constructor<?> lexerConstructor = lexerClass.getConstructor(CharStream.class);
 		final Constructor<?> parserConstructor = parserClass.getConstructor(TokenStream.class);
-		log.info("Parsing :" + grammarFile.getAbsolutePath());
+		log.info("Parsing :" + exampleFile.getAbsolutePath());
 		CharStream antlrCharStream;
 		/*
 		 * case
 		 */
 		if (scenario.getCaseInsensitiveType() == CaseInsensitiveType.None) {
-			antlrCharStream = CharStreams.fromPath(grammarFile.toPath(), Charset.forName(scenario.getFileEncoding()));
+			antlrCharStream = CharStreams.fromPath(exampleFile.toPath(), Charset.forName(scenario.getFileEncoding()));
 		} else {
-			antlrCharStream = new AntlrCaseInsensitiveFileStream(grammarFile.getAbsolutePath(), scenario.getFileEncoding(), scenario.getCaseInsensitiveType());
+			antlrCharStream = new AntlrCaseInsensitiveFileStream(exampleFile.getAbsolutePath(), scenario.getFileEncoding(), scenario.getCaseInsensitiveType());
 		}
 		/*
 		 * binary
 		 */
-		if (true == scenario.getBinary()) {
+		if (scenario.isBinary()) {
 			antlrCharStream = new BinaryCharStream(antlrCharStream);
 		}
 		/*
@@ -171,7 +171,7 @@ public class ScenarioExecutor {
 		}
 		final Method method = parserClass.getMethod(scenario.getEntryPoint());
 		ParserRuleContext parserRuleContext = (ParserRuleContext) method.invoke(parser);
-		assertErrorsErrorListener.assertErrors(new File(grammarFile.getAbsolutePath() + GrammarTestMojo.ERRORS_SUFFIX), scenario.getFileEncoding());
+		assertErrorsErrorListener.assertErrors(new File(exampleFile.getAbsolutePath() + GrammarTestMojo.ERRORS_SUFFIX), scenario.getFileEncoding());
 		/*
 		 * show the tree
 		 */
@@ -183,35 +183,24 @@ public class ScenarioExecutor {
 		/*
 		 * check syntax
 		 */
-		final File treeFile = new File(grammarFile.getAbsolutePath() + GrammarTestMojo.TREE_SUFFIX);
+		final File treeFile = new File(exampleFile.getAbsolutePath() + GrammarTestMojo.TREE_SUFFIX);
 		if (treeFile.exists()) {
 			final String lispTree = Trees.toStringTree(parserRuleContext, parser);
-			if (null != lispTree) {
-				final String treeFileData = FileUtils.fileRead(treeFile, scenario.getFileEncoding());
-				if (null != treeFileData) {
-					if (0 != treeFileData.compareTo(lispTree)) {
-						final StringBuilder sb = new StringBuilder("Parse tree does not match '" + treeFile.getName() + "'. Differences: ");
-						for (final DiffMatchPatch.Diff diff : new DiffMatchPatch().diffMain(treeFileData, lispTree)) {
-							sb.append(diff.toString());
-							sb.append(", ");
-						}
-						throw new Exception(sb.toString());
-					} else {
-						log.info("Parse tree for '" + grammarFile.getName() + "' matches '" + treeFile.getName() + "'");
-					}
+			final String treeFileData = FileUtils.fileRead(treeFile, scenario.getFileEncoding());
+			if (0 != treeFileData.compareTo(lispTree)) {
+				final StringBuilder sb = new StringBuilder("Parse tree does not match '" + treeFile.getName() + "'. Differences: ");
+				for (final DiffMatchPatch.Diff diff : new DiffMatchPatch().diffMain(treeFileData, lispTree)) {
+					sb.append(diff.toString());
+					sb.append(", ");
 				}
+				throw new Exception(sb.toString());
+			} else {
+				log.info("Parse tree for '" + exampleFile.getName() + "' matches '" + treeFile.getName() + "'");
 			}
 		}
-		/*
-		 * yup
-		 */
-		parser = null;
-		lexer = null;
-		parserRuleContext = null;
-		antlrCharStream = null;
 	}
 
-	public void testGrammars() throws Exception {
+	public void testExamples() throws Exception {
 		/*
 		 * iterate examples
 		 */
@@ -226,7 +215,7 @@ public class ScenarioExecutor {
 					 * file extension
 					 */
 					if ((scenario.getTestFileExtension() == null) || ((scenario.getTestFileExtension() != null) && (file.getName().endsWith(scenario.getTestFileExtension())))) {
-						testGrammar(scenario, file);
+						testExample(scenario, file);
 					}
 				}
 				/*
@@ -244,18 +233,18 @@ public class ScenarioExecutor {
 	 * @return hex bytes
 	 */
 	private String tokToHex(Token token) {
-		String ret = "";
+		StringBuilder ret = new StringBuilder();
 		token.getInputStream().seek(0);
 		boolean first = true;
 		for (int i = token.getStartIndex(); i < (token.getStopIndex() + 1); i++) {
-			if (true == first) {
+			if (first) {
 				first = false;
 			} else {
-				ret += ",";
+				ret.append(",");
 			}
 			final int t = token.getInputStream().LA(i + 1);
-			ret += "0x" + String.format("%02X", (byte) t);
+			ret.append("0x").append(String.format("%02X", (byte) t));
 		}
-		return ret;
+		return ret.toString();
 	}
 }

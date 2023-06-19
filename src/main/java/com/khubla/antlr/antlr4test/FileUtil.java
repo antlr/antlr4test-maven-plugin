@@ -39,9 +39,8 @@ public class FileUtil {
 	 *
 	 * @param dir Directory
 	 * @return list of files
-	 * @throws Exception from getAllFiles
 	 */
-	public static List<File> getAllFiles(String dir) throws Exception {
+	public static List<File> getAllFiles(String dir) {
 		return getAllFiles(dir, null);
 	}
 
@@ -53,17 +52,20 @@ public class FileUtil {
 	 * @return list of files
 	 */
 	public static List<File> getAllFiles(String dir, String extension) {
-		final List<File> ret = new ArrayList<File>();
+		final List<File> ret = new ArrayList<>();
 		final File file = new File(dir);
 		if (file.exists()) {
 			final String[] list = file.list();
 			if (null != list) {
-				for (int i = 0; i < list.length; i++) {
-					final String fileName = dir + "/" + list[i];
+				for (String s : list) {
+					final String fileName = dir + "/" + s;
 					final File f2 = new File(fileName);
 					if (!f2.isHidden()) {
 						if (f2.isDirectory()) {
-							ret.addAll(getAllFiles(fileName, extension));
+							List<File> f2Files = getAllFiles(fileName, extension);
+							if (null != f2Files) {
+								ret.addAll(f2Files);
+							}
 						} else {
 							if (null != extension) {
 								if (f2.getName().endsWith(extension)) {
@@ -83,16 +85,10 @@ public class FileUtil {
 	}
 
 	public static List<String> getNonEmptyLines(File file, String encoding) throws IOException {
-		final List<String> nonEmptyLines = new ArrayList<String>();
-		BufferedReader br = null;
-		InputStreamReader isr = null;
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(file);
-			try {
-				isr = new InputStreamReader(fis, encoding);
-				try {
-					br = new BufferedReader(isr);
+		final List<String> nonEmptyLines = new ArrayList<>();
+		try (FileInputStream fis = new FileInputStream(file)) {
+			try (InputStreamReader isr = new InputStreamReader(fis, encoding)) {
+				try (BufferedReader br = new BufferedReader(isr)) {
 					String line = br.readLine();
 					while (line != null) {
 						if (!"".equals(line.trim())) {
@@ -101,19 +97,7 @@ public class FileUtil {
 						line = br.readLine();
 					}
 					return nonEmptyLines;
-				} finally {
-					if (br != null) {
-						br.close();
-					}
 				}
-			} finally {
-				if (isr != null) {
-					isr.close();
-				}
-			}
-		} finally {
-			if (fis != null) {
-				fis.close();
 			}
 		}
 	}

@@ -101,14 +101,10 @@ public class Scenario {
 	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before test starts
 	 */
 	@Parameter
-	private String grammarInitializer = null;
+	private String grammarInitializer;
 
 	public File getBaseDir() {
 		return baseDir;
-	}
-
-	public boolean getBinary() {
-		return binary;
 	}
 
 	public CaseInsensitiveType getCaseInsensitiveType() {
@@ -154,6 +150,10 @@ public class Scenario {
 
 	public String getTestFileExtension() {
 		return testFileExtension;
+	}
+
+	public boolean isBinary() {
+		return binary;
 	}
 
 	public boolean isEnabled() {

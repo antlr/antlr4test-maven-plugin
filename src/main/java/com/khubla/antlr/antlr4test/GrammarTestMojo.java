@@ -28,7 +28,6 @@
 package com.khubla.antlr.antlr4test;
 
 import java.io.*;
-import java.net.*;
 import java.util.*;
 
 import org.apache.maven.plugin.*;
@@ -39,7 +38,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 /**
  * @author Tom Everett
  */
-@Mojo(name = "test", defaultPhase = LifecyclePhase.TEST, requiresProject = true, threadSafe = false)
+@Mojo(name = "test", defaultPhase = LifecyclePhase.TEST)
 public class GrammarTestMojo extends AbstractMojo {
 	/**
 	 * errors file
@@ -98,7 +97,7 @@ public class GrammarTestMojo extends AbstractMojo {
 	 * testFileExtension
 	 */
 	@Parameter
-	private String testFileExtension = null;
+	private String testFileExtension;
 	/**
 	 * basedir dir
 	 */
@@ -113,12 +112,12 @@ public class GrammarTestMojo extends AbstractMojo {
 	 * Full qualified class name to initialize grammar (Lexer and/or Parser) before test starts
 	 */
 	@Parameter
-	private String grammarInitializer = null;
+	private String grammarInitializer;
 	/**
 	 * List of test scenarios to be executed.
 	 */
 	@Parameter
-	private List<Scenario> scenarios = null;
+	private List<Scenario> scenarios;
 	/**
 	 * read outputDirectory from pom project.build.outputDirectory
 	 */
@@ -132,20 +131,18 @@ public class GrammarTestMojo extends AbstractMojo {
 
 	/**
 	 * ctor
-	 *
-	 * @throws MalformedURLException exception for malformed url *eye roll*
 	 */
-	public GrammarTestMojo() throws MalformedURLException {
+	public GrammarTestMojo() {
 	}
 
 	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
+	public void execute() throws MojoExecutionException {
 		try {
 			/*
 			 * No scenario configuration has been given. Creates a default one.
 			 */
 			if (scenarios == null) {
-				scenarios = new ArrayList<Scenario>();
+				scenarios = new ArrayList<>();
 			}
 			if ((grammarName != null) && !"".equals(grammarName)) {
 				//
@@ -357,8 +354,7 @@ public class GrammarTestMojo extends AbstractMojo {
 			}
 			if (scenario.isEnabled()) {
 				ScenarioExecutor executor = new ScenarioExecutor(this, scenario, mojoLogger);
-				executor.testGrammars();
-				executor = null;
+				executor.testExamples();
 			} else {
 				mojoLogger.warn("Scenario " + scenario.getScenarioName() + " is disabled. Skipping.");
 			}

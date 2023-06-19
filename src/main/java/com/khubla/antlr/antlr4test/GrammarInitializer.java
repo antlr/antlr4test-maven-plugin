@@ -30,5 +30,5 @@ package com.khubla.antlr.antlr4test;
 import org.antlr.v4.runtime.*;
 
 public interface GrammarInitializer {
-	public void initialize(Lexer lexer, Parser parser);
+	void initialize(Lexer lexer, Parser parser);
 }

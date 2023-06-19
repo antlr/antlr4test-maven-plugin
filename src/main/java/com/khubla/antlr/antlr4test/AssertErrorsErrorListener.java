@@ -43,8 +43,8 @@ public class AssertErrorsErrorListener extends BaseErrorListener {
 	protected static final String LITERAL_BACKSLASH_N_PLACEHOLDER = "literal-backslash-n";
 	protected static final String LITERAL_BACKSLASH_N = "\\\\n";
 	protected List<String> errorMessages = new ArrayList<>();
-	private Scenario scenario = null;
-	private Log log = null;
+	private final Scenario scenario;
+	private final Log log;
 
 	public AssertErrorsErrorListener(Scenario scenario, Log log) {
 		this.scenario = scenario;
@@ -53,7 +53,7 @@ public class AssertErrorsErrorListener extends BaseErrorListener {
 
 	public void assertErrors(File errorMessagesFile, String encoding) throws AssertErrorsException {
 		if (!errorMessages.isEmpty()) {
-			List<String> expectedErrorMessages = null;
+			List<String> expectedErrorMessages;
 			String errorMessageFileName = null;
 			if (errorMessagesFile != null) {
 				errorMessageFileName = errorMessagesFile.getName();
