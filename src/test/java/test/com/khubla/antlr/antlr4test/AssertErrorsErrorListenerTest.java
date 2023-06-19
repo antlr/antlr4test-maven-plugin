@@ -42,9 +42,9 @@ import com.khubla.antlr.antlr4test.*;
  * @author mario.schroeder
  */
 public class AssertErrorsErrorListenerTest {
-	private Scenario scenario = null;
-	private Log log = null;
-	private AssertErrorsErrorListener classUnderTest = null;
+	private Scenario scenario;
+	private Log log;
+	private AssertErrorsErrorListener classUnderTest;
 
 	@Before
 	public void setUp() {

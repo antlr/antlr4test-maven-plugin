@@ -84,7 +84,7 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 	/**
 	 * Basic test of binary
 	 */
-	public void testBinary() throws Exception {
+	public void testBinary() {
 		try {
 			System.out.println("Testing '" + BINARY_POMFILE + "'");
 			final File pom = getTestFile(BINARY_POMFILE);
@@ -128,21 +128,21 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 	/**
 	 * Basic test of case insensitive execution
 	 */
-	public void testCaseInsensitiveLowerExecution() throws Exception {
+	public void testCaseInsensitiveLowerExecution() {
 		testCaseInsensitiveExecution(CASEINSENSITIVE_lower_POMFILE);
 	}
 
 	/**
 	 * Basic test of case insensitive execution
 	 */
-	public void testCaseInsensitiveUpperExecution() throws Exception {
+	public void testCaseInsensitiveUpperExecution() {
 		testCaseInsensitiveExecution(CASEINSENSITIVE_UPPER_POMFILE);
 	}
 
 	/**
 	 * Basic test of execution
 	 */
-	public void testGenericExecution() throws Exception {
+	public void testGenericExecution() {
 		try {
 			/*
 			 * pom
@@ -168,7 +168,7 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 	/**
 	 * Basic test of instantiation
 	 */
-	public void testGrammarInitializer() throws Exception {
+	public void testGrammarInitializer() {
 		try {
 			System.out.println("Testing '" + GRAMMAR_INIT_POMFILE + "'");
 			final File pom = getTestFile(GRAMMAR_INIT_POMFILE);
@@ -191,7 +191,7 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 	/**
 	 * Basic test of instantiation
 	 */
-	public void testInstatiation() throws Exception {
+	public void testInstatiation() {
 		try {
 			final File pom = getTestFile(GENERIC_POMFILE);
 			assertNotNull(pom);
@@ -199,9 +199,9 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 			final GrammarTestMojo grammarTestMojo = (GrammarTestMojo) lookupMojo(TEST_GOAL, pom);
 			assertNotNull(grammarTestMojo);
 			assertTrue(grammarTestMojo.isVerbose());
-			assertTrue(grammarTestMojo.getExampleFiles().compareTo("src/test/resources/examples") == 0);
-			assertTrue(grammarTestMojo.getEntryPoint().compareTo("equation") == 0);
-			assertTrue(grammarTestMojo.getTestFileExtension().compareTo(".txt") == 0);
+			assertEquals(0, grammarTestMojo.getExampleFiles().compareTo("src/test/resources/examples"));
+			assertEquals(0, grammarTestMojo.getEntryPoint().compareTo("equation"));
+			assertEquals(0, grammarTestMojo.getTestFileExtension().compareTo(".txt"));
 		} catch (final Exception e) {
 			e.printStackTrace();
 			Assert.fail("Unexpected exception " + e);
@@ -211,7 +211,7 @@ public class TestGrammarTestMojo extends AbstractMojoTestCase {
 	/**
 	 * Test scenario based configuration
 	 */
-	public void testScenarioConfiguration() throws Exception {
+	public void testScenarioConfiguration() {
 		try {
 			/*
 			 * pom
