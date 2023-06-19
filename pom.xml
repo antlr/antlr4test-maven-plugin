@@ -41,6 +41,7 @@
 		<antlr.version>4.11.1</antlr.version>
 		<org.easymock.version>5.1.0</org.easymock.version>
 		<target.jvm>11</target.jvm>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
 		<dependency>
